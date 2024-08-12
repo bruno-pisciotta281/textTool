@@ -11,7 +11,7 @@
     body {
         font-family: Arial, sans-serif;
         background-color: #f4f4f4;
-        margin: 2px;
+        margin: 10px;
         padding: 0;
         display: flex;
         justify-content: center;
@@ -124,6 +124,7 @@
             <p>Erros: <span id="errors">0</span></p>
             <p>Tempo: <span id="time">0.00</span> segundos</p>
             <p>Velocidade: <span id="speed">0</span> WPM</p>
+            <strong><p>Pontuação: <span id="score">0</span></p></strong>
         </div>
     </div>
     <script>
@@ -139,15 +140,37 @@
         const errorsElement = document.getElementById('errors');
         const timeElement = document.getElementById('time');
         const speedElement = document.getElementById('speed');
+        const scoreElement = document.getElementById('score');
 
         let startTime, timerInterval, errorCount = 0;
         let backspaceCount = 0;
         let timerStarted = false;
 
         const suggestedTexts = [
+           "A vida é como andar de bicicleta. Para manter o equilíbrio, é preciso continuar se movendo.",
+            "O sucesso é a soma de pequenos esforços repetidos dia após dia.",
             "A persistência é o caminho do êxito.",
-            "A vida é como andar de bicicleta. Para manter o equilíbrio, é preciso continuar se movendo.",
-            "Nada é tão contagioso quanto o entusiasmo."
+            "Nada é tão contagioso quanto o entusiasmo.",
+            "O único lugar onde o sucesso vem antes do trabalho é no dicionário.",
+            "A paciência é a arte de esperar sem perder a esperança.",
+            "O verdadeiro líder inspira outros a encontrar sua própria grandeza.",
+            "A gratidão transforma o que temos em suficiente.",
+            "A sabedoria não está em ter todas as respostas, mas em fazer as perguntas certas.",
+            "A coragem não é a ausência do medo, mas a decisão de que algo é mais importante que o medo.",
+            "O otimismo é o íman da felicidade.",
+            "A humildade é a base do crescimento pessoal.",
+            "A compaixão é a linguagem universal do coração.",
+            "A autenticidade é o melhor perfume que se pode usar.",
+            "A flexibilidade mental é o segredo para se adaptar a um mundo em constante mudança.",
+            "O autoconhecimento é o primeiro passo para a realização pessoal.",
+            "A disciplina é a ponte entre metas e realizações.",
+            "A empatia é o alicerce de relacionamentos significativos.",
+            "A resiliência transforma obstáculos em oportunidades.",
+            "O conhecimento é a chave que abre todas as portas da oportunidade.",
+            "A gentileza é uma linguagem que todos podem entender.",
+            "Cada desafio é uma chance de crescer e se fortalecer.",
+            "A criatividade floresce quando regada com curiosidade.",
+            "O respeito mútuo é a base de relacionamentos duradouros."
         ];
 
         suggestButton.addEventListener('click', suggestText);
@@ -169,6 +192,7 @@
             highlightedText.innerHTML = '';
             errorsElement.innerText = '0';
             backspaceCount = 0;
+            scoreElement.innerText = '0';
         }
 
         function startTest() {
@@ -214,6 +238,7 @@
             stopButton.disabled = true;
             resetButton.disabled = false;
             calculateSpeed();
+            calculateScore();
         }
 
         function resetTest() {
@@ -261,6 +286,22 @@
             const wordCount = inputText.value.split(' ').length;
             const wpm = Math.round(wordCount / timeElapsed);
             speedElement.innerText = wpm;
+        }
+
+        function calculateScore() {
+            const totalWords = originalText.split(' ').length;
+            const typedWords = inputText.value.split(' ').length;
+            const timeElapsed = (new Date().getTime() - startTime) / 1000; // em segundos
+            const maxTime = 300; // Tempo máximo em segundos para pontuação total (por exemplo, 5 minutos)
+
+            // Normalização dos fatores
+            const accuracy = Math.max(0, 1 - (errorsElement.innerText / totalWords));
+            const wordFactor = Math.min(1, typedWords / totalWords);
+            const timeFactor = Math.max(0, 1 - (timeElapsed / maxTime));
+
+            // Cálculo da pontuação (entre 1 e 10)
+            const score = Math.round(10 * (0.5 * wordFactor + 0.3 * accuracy + 0.2 * timeFactor));
+            scoreElement.innerText = score;
         }
     </script>
 </body>
