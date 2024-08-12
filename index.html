@@ -73,6 +73,13 @@
         color: red;
     }
 
+    .copied-message {
+        color: red;
+        margin-top: 10px;
+        font-weight: bold;
+        display: none;
+    }
+
     .buttons {
         display: flex;
         justify-content: space-between;
@@ -115,6 +122,7 @@
         <div id="highlightedText"></div>
         <hr>
         <textarea id="inputText" placeholder="Digite o texto aqui..." disabled></textarea>
+        <div id="copiedMessage" class="copied-message">Texto copiado</div>
         <div class="buttons">
             <button id="startButton">Iniciar Teste</button>
             <button id="stopButton" disabled>Parar Teste</button>
@@ -141,6 +149,7 @@
         const timeElement = document.getElementById('time');
         const speedElement = document.getElementById('speed');
         const scoreElement = document.getElementById('score');
+        const copiedMessage = document.getElementById('copiedMessage');
 
         let startTime, timerInterval, errorCount = 0;
         let backspaceCount = 0;
@@ -180,6 +189,7 @@
         resetButton.addEventListener('click', resetTest);
         inputText.addEventListener('keydown', countBackspace);
         inputText.addEventListener('input', startTimerOnInput);
+        inputText.addEventListener('paste', detectPaste);
 
         function suggestText() {
             const randomIndex = Math.floor(Math.random() * suggestedTexts.length);
@@ -193,6 +203,7 @@
             errorsElement.innerText = '0';
             backspaceCount = 0;
             scoreElement.innerText = '0';
+            copiedMessage.style.display = 'none';
         }
 
         function startTest() {
@@ -282,26 +293,30 @@
         }
 
         function calculateSpeed() {
-            const timeElapsed = (new Date().getTime() - startTime) / 60000;
-            const wordCount = inputText.value.split(' ').length;
-            const wpm = Math.round(wordCount / timeElapsed);
+            const timeElapsed = (new Date().getTime() - startTime) / 60000; // in minutes
+            const wordCount = inputText.value.trim().split(/\s+/).length;
+            const wpm = Math.floor(wordCount / timeElapsed);
             speedElement.innerText = wpm;
         }
 
         function calculateScore() {
-            const totalWords = originalText.split(' ').length;
-            const typedWords = inputText.value.split(' ').length;
-            const timeElapsed = (new Date().getTime() - startTime) / 1000; // em segundos
-            const maxTime = 300; // Tempo máximo em segundos para pontuação total (por exemplo, 5 minutos)
-
-            // Normalização dos fatores
-            const accuracy = Math.max(0, 1 - (errorsElement.innerText / totalWords));
-            const wordFactor = Math.min(1, typedWords / totalWords);
-            const timeFactor = Math.max(0, 1 - (timeElapsed / maxTime));
-
-            // Cálculo da pontuação (entre 1 e 10)
-            const score = Math.round(10 * (0.5 * wordFactor + 0.3 * accuracy + 0.2 * timeFactor));
+            const timeElapsed = (new Date().getTime() - startTime) / 1000; // in seconds
+            const wordCount = inputText.value.trim().split(/\s+/).length;
+            const wpm = Math.floor(wordCount / (timeElapsed / 60));
+            const accuracy = Math.max(0, (wordCount - backspaceCount) / wordCount);
+            const score = Math.floor(wpm * accuracy);
             scoreElement.innerText = score;
+        }
+
+        function detectPaste(event) {
+            const pastedText = event.clipboardData.getData('text');
+            if (pastedText === originalText) {
+                copiedMessage.style.display = 'block';
+                event.preventDefault();
+                inputText.value = '';
+            } else {
+                copiedMessage.style.display = 'none';
+            }
         }
     </script>
 </body>
