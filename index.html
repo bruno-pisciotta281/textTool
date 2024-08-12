@@ -11,7 +11,7 @@
     body {
         font-family: Arial, sans-serif;
         background-color: #f4f4f4;
-        margin: 1px;
+        margin: 2px;
         padding: 0;
         display: flex;
         justify-content: center;
@@ -112,12 +112,13 @@
             <button id="clearButton">Limpar</button>
         </div>
         <hr>
-        <center> <div id="highlightedText"></div> </center>
+        <div id="highlightedText"></div>
         <hr>
         <textarea id="inputText" placeholder="Digite o texto aqui..." disabled></textarea>
         <div class="buttons">
             <button id="startButton">Iniciar Teste</button>
             <button id="stopButton" disabled>Parar Teste</button>
+            <button id="resetButton">Reiniciar Teste</button>
         </div>
         <div id="result">
             <p>Erros: <span id="errors">0</span></p>
@@ -132,6 +133,7 @@
         const inputText = document.getElementById('inputText');
         const startButton = document.getElementById('startButton');
         const stopButton = document.getElementById('stopButton');
+        const resetButton = document.getElementById('resetButton');
         const suggestButton = document.getElementById('suggestButton');
         const clearButton = document.getElementById('clearButton');
         const errorsElement = document.getElementById('errors');
@@ -140,6 +142,7 @@
 
         let startTime, timerInterval, errorCount = 0;
         let backspaceCount = 0;
+        let timerStarted = false;
 
         const suggestedTexts = [
             "A persistência é o caminho do êxito.",
@@ -151,7 +154,9 @@
         clearButton.addEventListener('click', clearText);
         startButton.addEventListener('click', startTest);
         stopButton.addEventListener('click', stopTest);
+        resetButton.addEventListener('click', resetTest);
         inputText.addEventListener('keydown', countBackspace);
+        inputText.addEventListener('input', startTimerOnInput);
 
         function suggestText() {
             const randomIndex = Math.floor(Math.random() * suggestedTexts.length);
@@ -179,6 +184,7 @@
             inputText.focus();
             startButton.disabled = true;
             stopButton.disabled = false;
+            resetButton.disabled = true;
             errorsElement.innerText = '0';
             timeElement.innerText = '0.00';
             speedElement.innerText = '0';
@@ -187,13 +193,18 @@
             highlightedText.innerHTML = originalText;
             highlightedText.style.display = 'block';
 
-            timerInterval = setInterval(() => {
-                const currentTime = new Date().getTime();
-                const timeElapsed = (currentTime - startTime) / 1000;
-                timeElement.innerText = timeElapsed.toFixed(2);
-            }, 100);
-
             inputText.addEventListener('input', checkText);
+        }
+
+        function startTimerOnInput() {
+            if (!timerStarted) {
+                timerStarted = true;
+                timerInterval = setInterval(() => {
+                    const currentTime = new Date().getTime();
+                    const timeElapsed = (currentTime - startTime) / 1000;
+                    timeElement.innerText = timeElapsed.toFixed(2);
+                }, 100);
+            }
         }
 
         function stopTest() {
@@ -201,7 +212,17 @@
             inputText.disabled = true;
             startButton.disabled = false;
             stopButton.disabled = true;
+            resetButton.disabled = false;
             calculateSpeed();
+        }
+
+        function resetTest() {
+            clearText();
+            startButton.disabled = false;
+            stopButton.disabled = true;
+            resetButton.disabled = true;
+            inputOriginalText.focus();
+            timerStarted = false;
         }
 
         function checkText() {
