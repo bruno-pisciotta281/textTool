@@ -11,7 +11,7 @@
     body {
         font-family: Arial, sans-serif;
         background-color: #f4f4f4;
-        margin: 10px;
+        margin: 15px;
         padding: 0;
         display: flex;
         justify-content: center;
@@ -50,6 +50,9 @@
         color: #555;
         white-space: pre-wrap;
         text-align: left;
+        overflow-y: auto; /* Adiciona rolagem se o texto for muito grande */
+        max-height: 150px; /* Limita a altura para melhor visualização */
+        position: relative;
     }
 
     textarea {
@@ -109,7 +112,6 @@
         margin: 5px 0;
     }
 
-    /* Estilo da mensagem de texto copiado */
     .copied-message {
         display: none;
         color: red;
@@ -160,13 +162,12 @@
         const speedElement = document.getElementById('speed');
         const scoreElement = document.getElementById('score');
         const copiedMessage = document.getElementById('copiedMessage');
-
-        let startTime, timerInterval, errorCount = 0;
-        let backspaceCount = 0;
+    
+        let startTime, timerInterval, backspaceCount = 0;
         let timerStarted = false;
-
+    
         const suggestedTexts = [
-           "A vida é como andar de bicicleta. Para manter o equilíbrio, é preciso continuar se movendo.",
+            "A vida é como andar de bicicleta. Para manter o equilíbrio, é preciso continuar se movendo.",
             "O sucesso é a soma de pequenos esforços repetidos dia após dia.",
             "A persistência é o caminho do êxito.",
             "Nada é tão contagioso quanto o entusiasmo.",
@@ -191,7 +192,7 @@
             "A criatividade floresce quando regada com curiosidade.",
             "O respeito mútuo é a base de relacionamentos duradouros."
         ];
-
+    
         suggestButton.addEventListener('click', suggestText);
         clearButton.addEventListener('click', clearText);
         startButton.addEventListener('click', startTest);
@@ -199,13 +200,15 @@
         resetButton.addEventListener('click', resetTest);
         inputText.addEventListener('keydown', countBackspace);
         inputText.addEventListener('input', startTimerOnInput);
+        inputText.addEventListener('input', updateHighlightedText);
         inputText.addEventListener('paste', detectPaste);
-
+    
         function suggestText() {
             const randomIndex = Math.floor(Math.random() * suggestedTexts.length);
             inputOriginalText.value = suggestedTexts[randomIndex];
+            inputOriginalText.dispatchEvent(new Event('input'));
         }
-
+    
         function clearText() {
             inputOriginalText.value = '';
             inputText.value = '';
@@ -215,14 +218,14 @@
             scoreElement.innerText = '0';
             copiedMessage.style.display = 'none';
         }
-
+    
         function startTest() {
             originalText = inputOriginalText.value.trim();
             if (!originalText) {
                 alert('Por favor, insira o texto para o teste.');
                 return;
             }
-
+    
             startTime = new Date().getTime();
             inputText.value = '';
             inputText.disabled = false;
@@ -234,13 +237,12 @@
             timeElement.innerText = '0.00';
             speedElement.innerText = '0';
             backspaceCount = 0;
-
-            highlightedText.innerHTML = originalText;
+    
+            updateHighlightedText(); // Atualiza a visualização inicial do texto
+    
             highlightedText.style.display = 'block';
-
-            inputText.addEventListener('input', checkText);
         }
-
+    
         function startTimerOnInput() {
             if (!timerStarted) {
                 timerStarted = true;
@@ -251,7 +253,7 @@
                 }, 100);
             }
         }
-
+    
         function stopTest() {
             clearInterval(timerInterval);
             inputText.disabled = true;
@@ -261,7 +263,7 @@
             calculateSpeed();
             calculateScore();
         }
-
+    
         function resetTest() {
             clearText();
             startButton.disabled = false;
@@ -270,62 +272,70 @@
             inputOriginalText.focus();
             timerStarted = false;
         }
-
-        function checkText() {
-            const input = inputText.value.split(' ');
-            const originalWords = originalText.split(' ');
+    
+        function updateHighlightedText() {
+            const typedText = inputText.value;
+            const visibleTextStart = Math.max(0, typedText.length - 100); // Ajuste conforme necessário
+            const visibleTextEnd = Math.min(originalText.length, typedText.length + 100);
+    
+            const visibleOriginalText = originalText.slice(visibleTextStart, visibleTextEnd);
+            const typedTextSegment = typedText.slice(visibleTextStart, visibleTextEnd);
+    
             let highlighted = '';
-
-            for (let i = 0; i < originalWords.length; i++) {
-                if (input[i] === originalWords[i]) {
-                    highlighted += `<span class="correct">${originalWords[i]}</span>`;
+            for (let i = 0; i < visibleOriginalText.length; i++) {
+                if (typedTextSegment[i] === visibleOriginalText[i]) {
+                    highlighted += `<span class="correct">${visibleOriginalText[i]}</span>`;
                 } else {
-                    highlighted += `<span class="incorrect">${originalWords[i]}</span>`;
-                }
-
-                if (i < originalWords.length - 1) {
-                    highlighted += ' ';
+                    highlighted += `<span class="incorrect">${visibleOriginalText[i]}</span>`;
                 }
             }
-
+    
             highlightedText.innerHTML = highlighted;
-            errorsElement.innerText = backspaceCount;
+    
+            // Rolar o texto para acompanhar a digitação
+            const container = highlightedText.parentElement;
+            container.scrollTop = highlightedText.scrollHeight;
 
-            if (input.join(' ') === originalText) {
-                stopTest();
-            }
+            checkText(); // Verificar se o texto digitado está completo
         }
 
+        function checkText() {
+        const input = inputText.value;
+        if (input === originalText) {
+            stopTest(); // Encerrar o teste se o texto digitado corresponder ao texto original
+        }
+    }
+    
         function countBackspace(event) {
             if (event.key === 'Backspace') {
                 backspaceCount++;
+                errorsElement.innerText = backspaceCount;
             }
         }
-
+    
         function calculateSpeed() {
             const timeElapsed = (new Date().getTime() - startTime) / 60000; // in minutes
             const wordCount = inputText.value.trim().split(/\s+/).length;
             const wpm = Math.floor(wordCount / timeElapsed);
             speedElement.innerText = wpm;
         }
-
+    
         function calculateScore() {
             const totalWords = originalText.split(' ').length;
             const typedWords = inputText.value.split(' ').length;
             const timeElapsed = (new Date().getTime() - startTime) / 1000; // em segundos
             const maxTime = 300; // Tempo máximo em segundos para pontuação total (por exemplo, 5 minutos)
-
+    
             // Normalização dos fatores
-            const accuracy = Math.max(0, 1 - (errorsElement.innerText / totalWords));
+            const accuracy = Math.max(0, 1 - (backspaceCount / totalWords));
             const wordFactor = Math.min(1, typedWords / totalWords);
             const timeFactor = Math.max(0, 1 - (timeElapsed / maxTime));
-
+    
             // Cálculo da pontuação (entre 1 e 10)
             const score = Math.round(10 * (0.5 * wordFactor + 0.3 * accuracy + 0.2 * timeFactor));
             scoreElement.innerText = score;
         }
         
-          // Função detectPaste modificada para incluir fade-out
         function detectPaste(event) {
             const pastedText = event.clipboardData.getData('text');
             if (pastedText === originalText) {
@@ -346,5 +356,6 @@
             }
         }
     </script>
+    
 </body>
 </html>
