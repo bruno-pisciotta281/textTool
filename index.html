@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Digitação</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 1px;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 400px;
+    }
+
+    h1 {
+        margin-bottom: 20px;
+        font-size: 24px;
+    }
+
+    #inputOriginalText {
+        width: 100%;
+        height: 50px;
+        padding: 10px;
+        font-size: 16px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        resize: none;
+    }
+
+    #highlightedText {
+        margin-bottom: 20px;
+        font-size: 18px;
+        color: #555;
+        white-space: pre-wrap;
+        text-align: left;
+    }
+
+    textarea {
+        width: 95% !important;
+        height: 100px;
+        padding: 10px;
+        font-size: 16px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        resize: none;
+        color: black;
+        background-color: #f9f9f9;
+    }
+
+    .correct {
+        color: green;
+    }
+
+    .incorrect {
+        color: red;
+    }
+
+    .buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button:disabled {
+        background-color: #ccc;
+    }
+
+    #result {
+        margin-top: 20px;
+        font-size: 18px;
+    }
+
+    #result p {
+        margin: 5px 0;
+    }
+</style>
+
+<body>
+    <div class="container">
+        <h1>Teste de Digitação</h1>
+        <textarea id="inputOriginalText" placeholder="Insira o texto para o teste aqui..."></textarea>
+        <div class="buttons">
+            <button id="suggestButton">Sugerir Texto</button>
+            <button id="clearButton">Limpar</button>
+        </div>
+        <hr>
+        <center> <div id="highlightedText"></div> </center>
+        <hr>
+        <textarea id="inputText" placeholder="Digite o texto aqui..." disabled></textarea>
+        <div class="buttons">
+            <button id="startButton">Iniciar Teste</button>
+            <button id="stopButton" disabled>Parar Teste</button>
+        </div>
+        <div id="result">
+            <p>Erros: <span id="errors">0</span></p>
+            <p>Tempo: <span id="time">0.00</span> segundos</p>
+            <p>Velocidade: <span id="speed">0</span> WPM</p>
+        </div>
+    </div>
+    <script>
+        let originalText = '';
+        const inputOriginalText = document.getElementById('inputOriginalText');
+        const highlightedText = document.getElementById('highlightedText');
+        const inputText = document.getElementById('inputText');
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const suggestButton = document.getElementById('suggestButton');
+        const clearButton = document.getElementById('clearButton');
+        const errorsElement = document.getElementById('errors');
+        const timeElement = document.getElementById('time');
+        const speedElement = document.getElementById('speed');
+
+        let startTime, timerInterval, errorCount = 0;
+        let backspaceCount = 0;
+
+        const suggestedTexts = [
+            "A persistência é o caminho do êxito.",
+            "A vida é como andar de bicicleta. Para manter o equilíbrio, é preciso continuar se movendo.",
+            "Nada é tão contagioso quanto o entusiasmo."
+        ];
+
+        suggestButton.addEventListener('click', suggestText);
+        clearButton.addEventListener('click', clearText);
+        startButton.addEventListener('click', startTest);
+        stopButton.addEventListener('click', stopTest);
+        inputText.addEventListener('keydown', countBackspace);
+
+        function suggestText() {
+            const randomIndex = Math.floor(Math.random() * suggestedTexts.length);
+            inputOriginalText.value = suggestedTexts[randomIndex];
+        }
+
+        function clearText() {
+            inputOriginalText.value = '';
+            inputText.value = '';
+            highlightedText.innerHTML = '';
+            errorsElement.innerText = '0';
+            backspaceCount = 0;
+        }
+
+        function startTest() {
+            originalText = inputOriginalText.value.trim();
+            if (!originalText) {
+                alert('Por favor, insira o texto para o teste.');
+                return;
+            }
+
+            startTime = new Date().getTime();
+            inputText.value = '';
+            inputText.disabled = false;
+            inputText.focus();
+            startButton.disabled = true;
+            stopButton.disabled = false;
+            errorsElement.innerText = '0';
+            timeElement.innerText = '0.00';
+            speedElement.innerText = '0';
+            backspaceCount = 0;
+
+            highlightedText.innerHTML = originalText;
+            highlightedText.style.display = 'block';
+
+            timerInterval = setInterval(() => {
+                const currentTime = new Date().getTime();
+                const timeElapsed = (currentTime - startTime) / 1000;
+                timeElement.innerText = timeElapsed.toFixed(2);
+            }, 100);
+
+            inputText.addEventListener('input', checkText);
+        }
+
+        function stopTest() {
+            clearInterval(timerInterval);
+            inputText.disabled = true;
+            startButton.disabled = false;
+            stopButton.disabled = true;
+            calculateSpeed();
+        }
+
+        function checkText() {
+            const input = inputText.value.split(' ');
+            const originalWords = originalText.split(' ');
+            let highlighted = '';
+
+            for (let i = 0; i < originalWords.length; i++) {
+                if (input[i] === originalWords[i]) {
+                    highlighted += `<span class="correct">${originalWords[i]}</span>`;
+                } else {
+                    highlighted += `<span class="incorrect">${originalWords[i]}</span>`;
+                }
+
+                if (i < originalWords.length - 1) {
+                    highlighted += ' ';
+                }
+            }
+
+            highlightedText.innerHTML = highlighted;
+            errorsElement.innerText = backspaceCount;
+
+            if (input.join(' ') === originalText) {
+                stopTest();
+            }
+        }
+
+        function countBackspace(event) {
+            if (event.key === 'Backspace') {
+                backspaceCount++;
+            }
+        }
+
+        function calculateSpeed() {
+            const timeElapsed = (new Date().getTime() - startTime) / 60000;
+            const wordCount = inputText.value.split(' ').length;
+            const wpm = Math.round(wordCount / timeElapsed);
+            speedElement.innerText = wpm;
+        }
+    </script>
+</body>
+</html>
