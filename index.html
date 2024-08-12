@@ -108,6 +108,16 @@
     #result p {
         margin: 5px 0;
     }
+
+    /* Estilo da mensagem de texto copiado */
+    .copied-message {
+        display: none;
+        color: red;
+        font-weight: bold;
+        margin-top: 10px;
+        opacity: 1;
+        transition: opacity 1s ease-out;
+    }
 </style>
 
 <body>
@@ -300,20 +310,37 @@
         }
 
         function calculateScore() {
-            const timeElapsed = (new Date().getTime() - startTime) / 1000; // in seconds
-            const wordCount = inputText.value.trim().split(/\s+/).length;
-            const wpm = Math.floor(wordCount / (timeElapsed / 60));
-            const accuracy = Math.max(0, (wordCount - backspaceCount) / wordCount);
-            const score = Math.floor(wpm * accuracy);
+            const totalWords = originalText.split(' ').length;
+            const typedWords = inputText.value.split(' ').length;
+            const timeElapsed = (new Date().getTime() - startTime) / 1000; // em segundos
+            const maxTime = 300; // Tempo máximo em segundos para pontuação total (por exemplo, 5 minutos)
+
+            // Normalização dos fatores
+            const accuracy = Math.max(0, 1 - (errorsElement.innerText / totalWords));
+            const wordFactor = Math.min(1, typedWords / totalWords);
+            const timeFactor = Math.max(0, 1 - (timeElapsed / maxTime));
+
+            // Cálculo da pontuação (entre 1 e 10)
+            const score = Math.round(10 * (0.5 * wordFactor + 0.3 * accuracy + 0.2 * timeFactor));
             scoreElement.innerText = score;
         }
-
+        
+          // Função detectPaste modificada para incluir fade-out
         function detectPaste(event) {
             const pastedText = event.clipboardData.getData('text');
             if (pastedText === originalText) {
                 copiedMessage.style.display = 'block';
+                copiedMessage.style.opacity = '1'; // Garantir que a mensagem comece opaca
                 event.preventDefault();
                 inputText.value = '';
+                
+                // Remover a mensagem após 3 segundos com efeito fade-out
+                setTimeout(() => {
+                    copiedMessage.style.opacity = '0'; // Inicia o fade-out
+                    setTimeout(() => {
+                        copiedMessage.style.display = 'none'; // Esconde completamente após o fade-out
+                    }, 1000); // Tempo do fade-out (1 segundo neste caso)
+                }, 3000); // Aguardar 3 segundos antes de iniciar o fade-out
             } else {
                 copiedMessage.style.display = 'none';
             }
