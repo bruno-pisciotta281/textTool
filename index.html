@@ -136,7 +136,8 @@
         <h1>Teste de Digitação</h1>
         <textarea id="inputOriginalText" placeholder="Insira o texto para o teste aqui..."></textarea>
         <div class="buttons">
-            <button id="suggestButton">Sugerir Texto</button>
+            <button id="suggestButton">Treino</button>
+            <button id="scientificButton">Texto Científico</button> <!-- Novo botão -->
             <button id="clearButton">Limpar</button>
         </div>
         <hr>
@@ -218,6 +219,21 @@
             inputOriginalText.value = suggestedTexts[randomIndex];
             inputOriginalText.dispatchEvent(new Event('input'));
         }
+
+        const scientificTexts = [
+            "O recrutamento e seleção eficazes são cruciais para o sucesso organizacional, especialmente em setores caracterizados por rápidas mudanças tecnológicas e de mercado. Métodos tradicionais de seleção, focados principalmente em experiência e qualificações acadêmicas, têm sido cada vez mais questionados quanto à sua capacidade de prever o sucesso em ambientes de trabalho dinâmicos (Smith & Jones, 2022). Este estudo examina a eficácia de métodos de seleção baseados em competências em comparação com abordagens tradicionais de recrutamento em ambientes corporativos dinâmicos, com foco em empresas de tecnologia."
+        ];
+
+        const scientificButton = document.getElementById('scientificButton');
+
+        scientificButton.addEventListener('click', suggestScientificText);
+
+        function suggestScientificText() {
+            const randomIndex = Math.floor(Math.random() * scientificTexts.length);
+            inputOriginalText.value = scientificTexts[randomIndex];
+            inputOriginalText.dispatchEvent(new Event('input'));
+        }
+
     
         function clearText() {
             inputOriginalText.value = '';
