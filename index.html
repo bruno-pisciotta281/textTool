@@ -238,7 +238,8 @@
         <hr>
         <div id="result">
             <h1>Resultados</h1>
-            <p>Erros: <span id="errors">0</span></p>
+            <p>Correções: <span id="errors">0</span></p>
+            <p>Palavras erradas: <span id="countE">0</span></p>
             <p>Tempo: <span id="time">0.00</span> segundos</p>
             <p>Velocidade: <span id="speed">0</span> WPM</p>
             <strong><p>Pontuação: <span id="score">0</span></p></strong>
@@ -268,6 +269,7 @@
         const scoreElement = document.getElementById('score');
         const copiedMessage = document.getElementById('copiedMessage');
         const viewFullTextCheckbox = document.getElementById('viewFullText');
+        const countErrorsElement = document.getElementById('countE');
     
         let startTime, timerInterval, backspaceCount = 0;
         let timerStarted = false;
@@ -454,60 +456,62 @@
         }
 
         function updateHighlightedText() {
-    const typedText = inputText.value;
-    const originalWords = originalText.split(/\s+/);
-    const typedWords = typedText.split(/\s+/);
+            const typedText = inputText.value;
+            const originalWords = originalText.split(/\s+/);
+            const typedWords = typedText.split(/\s+/);
 
-    const currentWordIndex = typedWords.length - 1;
-    const windowSize = 20;
-    const halfWindow = Math.floor(windowSize / 2);
+            const currentWordIndex = typedWords.length - 1;
+            const windowSize = 20;
+            const halfWindow = Math.floor(windowSize / 2);
 
-    let startIndex = Math.max(0, currentWordIndex - Math.floor(windowSize / 2));
-    let endIndex = Math.min(originalWords.length, startIndex + windowSize);
+            let startIndex = Math.max(0, currentWordIndex - Math.floor(windowSize / 2));
+            let endIndex = Math.min(originalWords.length, startIndex + windowSize);
 
-    let highlighted = '';
+            let highlighted = '';
 
-    for (let i = startIndex; i < endIndex; i++) {
-        const originalWord = originalWords[i];
-        const typedWord = typedWords[i] || '';
+            for (let i = startIndex; i < endIndex; i++) {
+                const originalWord = originalWords[i];
+                const typedWord = typedWords[i] || '';
 
-        if (i < typedWords.length - 1) {
-            if (originalWord === typedWord) {
-                highlighted += `<span class="correct">${originalWord}</span> `;
-            } else {
-                highlighted += `<span class="incorrect">${originalWord}</span> `;
+                if (i < typedWords.length - 1) {
+                    if (originalWord === typedWord) {
+                        highlighted += `<span class="correct">${originalWord}</span> `;
+                    } else {
+                        highlighted += `<span class="incorrect">${originalWord}</span> `;
+                    }
+                } else if (i === typedWords.length - 1) {
+                    const matchedPart = originalWord.slice(0, typedWord.length);
+                    const remainingPart = originalWord.slice(typedWord.length);
+
+                    highlighted += `<span class="current">`;
+                    highlighted += `<span class="${typedWord === matchedPart ? 'correct' : 'incorrect'}">${matchedPart}</span>`;
+                    highlighted += `<span class="remaining next-word">${remainingPart}</span>`;
+                    highlighted += `</span> `;
+                } else {
+                    highlighted += `<span class="default">${originalWord}</span> `;
+                }
             }
-        } else if (i === typedWords.length - 1) {
-            const matchedPart = originalWord.slice(0, typedWord.length);
-            const remainingPart = originalWord.slice(typedWord.length);
 
-            highlighted += `<span class="current">`;
-            highlighted += `<span class="${typedWord === matchedPart ? 'correct' : 'incorrect'}">${matchedPart}</span>`;
-            highlighted += `<span class="remaining next-word">${remainingPart}</span>`;
-            highlighted += `</span> `;
-        } else {
-            highlighted += `<span class="default">${originalWord}</span> `;
+            // Adicionar indicadores de continuação se necessário
+            if (startIndex > 0) {
+                highlighted = '... ' + highlighted;
+            }
+            if (endIndex < originalWords.length) {
+                highlighted += ' ...';
+            }
+
+            // Atualizar o conteúdo apenas se houver mudanças significativas
+            if (highlightedText.innerHTML !== highlighted) {
+                highlightedText.innerHTML = highlighted.trim();
+            }
+
+            // Ajustar a rolagem suavemente
+            adjustScroll();
+
+            updateErrorCount();
+
+            checkText(); // Verificar se o texto digitado está completo
         }
-    }
-
-    // Adicionar indicadores de continuação se necessário
-    if (startIndex > 0) {
-        highlighted = '... ' + highlighted;
-    }
-    if (endIndex < originalWords.length) {
-        highlighted += ' ...';
-    }
-
-    // Atualizar o conteúdo apenas se houver mudanças significativas
-    if (highlightedText.innerHTML !== highlighted) {
-        highlightedText.innerHTML = highlighted.trim();
-    }
-
-    // Ajustar a rolagem suavemente
-    adjustScroll();
-
-    checkText(); // Verificar se o texto digitado está completo
-}
 
         function adjustScroll() {
             const container = highlightedText.parentElement;
@@ -554,15 +558,37 @@
             const typedWords = inputText.value.split(' ').length;
             const timeElapsed = (new Date().getTime() - startTime) / 1000; // em segundos
             const maxTime = 300; // Tempo máximo em segundos para pontuação total (por exemplo, 5 minutos)
-    
+
+            // Use a nova função de contagem de erros
+            const errors = countErrors();
+
             // Normalização dos fatores
-            const accuracy = Math.max(0, 1 - (backspaceCount / totalWords));
+            const accuracy = Math.max(0, 1 - (errors / totalWords));
             const wordFactor = Math.min(1, typedWords / totalWords);
             const timeFactor = Math.max(0, 1 - (timeElapsed / maxTime));
-    
+
             // Cálculo da pontuação (entre 1 e 10)
             const score = Math.round(10 * (0.5 * wordFactor + 0.3 * accuracy + 0.2 * timeFactor));
             scoreElement.innerText = score;
+        }
+
+        function countErrors() {
+            const typedWords = inputText.value.trim().split(/\s+/);
+            const originalWords = originalText.trim().split(/\s+/);
+            let errorCount = 0;
+
+            for (let i = 0; i < typedWords.length; i++) {
+                if (typedWords[i] !== originalWords[i]) {
+                    errorCount++;
+                }
+            }
+
+            return errorCount;
+        }
+
+        function updateErrorCount() {
+            const errors = countErrors();
+            countErrorsElement.innerText = errors;
         }
         
         function detectPaste(event) {
