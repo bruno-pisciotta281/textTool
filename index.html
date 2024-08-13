@@ -3,15 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
     <title>Teste de Digitação</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <style>
     body {
-        font-family: Arial, sans-serif;
+
+        font-family: "Montserrat", sans-serif;
+        font-optical-sizing: auto;
+        font-style: normal;
+
         background-color: #f4f4f4;
-        margin: 15px;
+        margin: 0px;
         padding: 0;
         display: flex;
         justify-content: center;
@@ -140,6 +149,7 @@
             <button id="stopButton" disabled>Parar Teste</button>
             <button id="resetButton">Reiniciar Teste</button>
         </div>
+        <hr>
         <div id="result">
             <p>Erros: <span id="errors">0</span></p>
             <p>Tempo: <span id="time">0.00</span> segundos</p>
@@ -225,8 +235,9 @@
                 alert('Por favor, insira o texto para o teste.');
                 return;
             }
-    
+
             startTime = new Date().getTime();
+            console.log("Tempo de início:", startTime); // Adicione este log
             inputText.value = '';
             inputText.disabled = false;
             inputText.focus();
@@ -237,15 +248,16 @@
             timeElement.innerText = '0.00';
             speedElement.innerText = '0';
             backspaceCount = 0;
-    
+
             updateHighlightedText(); // Atualiza a visualização inicial do texto
-    
             highlightedText.style.display = 'block';
         }
+
     
         function startTimerOnInput() {
             if (!timerStarted) {
                 timerStarted = true;
+                console.log("Iniciando o temporizador..."); // Adicione este log
                 timerInterval = setInterval(() => {
                     const currentTime = new Date().getTime();
                     const timeElapsed = (currentTime - startTime) / 1000;
@@ -266,39 +278,49 @@
     
         function resetTest() {
             clearText();
+            clearInterval(timerInterval); // Limpa o intervalo do temporizador
             startButton.disabled = false;
             stopButton.disabled = true;
             resetButton.disabled = true;
             inputOriginalText.focus();
             timerStarted = false;
+            startTime = null; // Zera o tempo inicial
+            timeElement.innerText = '0.00'; // Reseta o tempo exibido para 0.00 segundos
+            speedElement.innerText = '0'; // Reseta a velocidade exibida para 0 WPM
+            scoreElement.innerText = '0'; // Reseta a pontuação exibida para 0
+            backspaceCount = 0; // Zera a contagem de erros
+            errorsElement.innerText = '0'; // Reseta a exibição de erros para 0
         }
     
         function updateHighlightedText() {
             const typedText = inputText.value;
             const visibleTextStart = Math.max(0, typedText.length - 100); // Ajuste conforme necessário
             const visibleTextEnd = Math.min(originalText.length, typedText.length + 100);
-    
+            
             const visibleOriginalText = originalText.slice(visibleTextStart, visibleTextEnd);
             const typedTextSegment = typedText.slice(visibleTextStart, visibleTextEnd);
-    
+            
             let highlighted = '';
             for (let i = 0; i < visibleOriginalText.length; i++) {
-                if (typedTextSegment[i] === visibleOriginalText[i]) {
-                    highlighted += `<span class="correct">${visibleOriginalText[i]}</span>`;
+                if (i < typedTextSegment.length) {
+                    if (typedTextSegment[i] === visibleOriginalText[i]) {
+                        highlighted += `<span class="correct">${visibleOriginalText[i]}</span>`;
+                    } else {
+                        highlighted += `<span class="incorrect">${visibleOriginalText[i]}</span>`;
+                    }
                 } else {
-                    highlighted += `<span class="incorrect">${visibleOriginalText[i]}</span>`;
+                    highlighted += `<span class="default">${visibleOriginalText[i]}</span>`;
                 }
             }
-    
+            
             highlightedText.innerHTML = highlighted;
-    
+            
             // Rolar o texto para acompanhar a digitação
             const container = highlightedText.parentElement;
             container.scrollTop = highlightedText.scrollHeight;
 
             checkText(); // Verificar se o texto digitado está completo
         }
-
         function checkText() {
         const input = inputText.value;
         if (input === originalText) {
