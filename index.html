@@ -560,22 +560,45 @@
         }
     
         function calculateScore() {
-            const totalWords = originalText.split(' ').length;
-            const typedWords = inputText.value.split(' ').length;
+            const totalWords = originalText.trim().split(/\s+/).length;
+            const typedWords = inputText.value.trim().split(/\s+/).length;
             const timeElapsed = (new Date().getTime() - startTime) / 1000; // em segundos
-            const maxTime = 300; // Tempo máximo em segundos para pontuação total (por exemplo, 5 minutos)
+            const maxTime = 300; // Tempo máximo em segundos (5 minutos)
 
-            // Use a nova função de contagem de erros
             const errors = countErrors();
+            const backspaces = backspaceCount; // Assumindo que você está rastreando backspaces
 
-            // Normalização dos fatores
+            // Cálculo de precisão
             const accuracy = Math.max(0, 1 - (errors / totalWords));
-            const wordFactor = Math.min(1, typedWords / totalWords);
+
+            // Fator de palavras (considerando tanto a quantidade quanto a precisão)
+            const wordFactor = Math.min(1, (typedWords / totalWords) * accuracy);
+
+            // Fator de tempo (recompensa velocidade, mas com um limite)
             const timeFactor = Math.max(0, 1 - (timeElapsed / maxTime));
 
-            // Cálculo da pontuação (entre 1 e 10)
-            const score = Math.round(10 * (0.5 * wordFactor + 0.3 * accuracy + 0.2 * timeFactor));
+            // Fator de eficiência (penaliza o uso excessivo de backspace)
+            const efficiencyFactor = Math.max(0, 1 - (backspaces / (2 * totalWords)));
+
+            // Cálculo da pontuação (0-100)
+            const score = Math.round(100 * (
+                0.4 * wordFactor +   // 40% baseado nas palavras digitadas e precisão
+                0.3 * accuracy +     // 30% baseado apenas na precisão
+                0.2 * timeFactor +   // 20% baseado no tempo
+                0.1 * efficiencyFactor  // 10% baseado na eficiência (uso de backspace)
+            ));
+
+            // Exibição dos resultados
             scoreElement.innerText = score;
+            
+            // Opcional: Exibir detalhes adicionais
+            console.log(`Palavras totais: ${totalWords}`);
+            console.log(`Palavras digitadas: ${typedWords}`);
+            console.log(`Erros: ${errors}`);
+            console.log(`Backspaces: ${backspaces}`);
+            console.log(`Precisão: ${(accuracy * 100).toFixed(2)}%`);
+            console.log(`Tempo: ${timeElapsed.toFixed(2)} segundos`);
+            console.log(`Pontuação: ${score}`);
         }
 
         function countErrors() {
