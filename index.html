@@ -63,8 +63,8 @@
         color: #555;
         white-space: pre-wrap;
         text-align: left;
-        overflow-y: auto; /* Adiciona rolagem se o texto for muito grande */
-        max-height: 150px; /* Limita a altura para melhor visualização */
+        overflow-y: auto; 
+        max-height: 150px; 
         position: relative;
     }
 
@@ -184,15 +184,15 @@
         }
 
         .default {
-            color: black; /* Cor para texto original não digitado */
+            color: black; 
         }
 
         .correct {
-            color: green; /* Cor para texto correto */
+            color: green; 
         }
 
         .incorrect {
-            color: red; /* Cor para texto incorreto */
+            color: red; 
         }
 
         .highlighted-text-container {
@@ -213,6 +213,67 @@
             color: #999;
         }
 
+        .audio-player {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background-color: #f3f3f3;
+            padding: 10px;
+            border-radius: 10px;
+            display: none; /* Alterado de 'flex' para 'none' */
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-container {
+            flex-grow: 1;
+            margin: 0 10px;
+        }
+
+        #progressBar {
+            width: 100%;
+        }
+
+        #currentTime, #duration {
+            font-size: 12px;
+            color: #333;
+        }
+
+        .speed-label {
+        font-size: 14px;
+        color: #333;
+        margin-right: 5px;
+    }
+
+    select#speedControl {
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+        background-color: #f9f9f9;
+        color: #333;
+        cursor: pointer;
+        transition: border-color 0.3s, box-shadow 0.3s;
+        margin-right: 10px;
+    }
+
+    select#speedControl:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+
+    select#speedControl option {
+        background-color: #fff;
+        color: #333;
+        padding: 8px;
+        cursor: pointer;
+    }
+
+    select#speedControl option:hover {
+        background-color: #007bff;
+        color: #fff;
+    }
+
 </style>
 
 <body>
@@ -225,7 +286,7 @@
         </label>
         <div class="buttons">
             <button id="suggestButton">Treino</button>
-            <button id="scientificButton">Texto Científico</button> <!-- Novo botão -->
+            <button id="scientificButton">Texto Científico</button> 
             <button id="clearButton">Limpar</button>
         </div>
         <br>
@@ -251,6 +312,7 @@
             <strong><p>Pontuação: <span id="score">0</span></p></strong>
         </div>
     </div>
+    <audio id="audio" src="cientifico.mp3"></audio>    
 
       <!-- Nova área de review -->
       <div id="reviewContainer" class="review-container" style="display: none;">
@@ -258,7 +320,26 @@
         <p id="reviewText"></p>
     </div>
 
-
+    <div class="audio-player">
+        <button id="playPauseBtn">Play</button>
+        <div class="progress-container">
+            <input type="range" id="progressBar" value="0" max="100" step="0.1">
+        </div>
+        <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+        <label for="speedControl" class="speed-label"></label>
+        <select id="speedControl">
+            <option value="0.5">0.5x</option>
+            <option value="0.75">0.75x</option>
+            <option value="1.0" selected>1.0x</option>
+            <option value="1.25">1.25x</option>
+            <option value="1.5">1.5x</option>
+            <option value="1.75">1.75x</option>
+            <option value="2.0">2.0x</option>
+        </select>
+        <input type="checkbox" id="autoPlayAudio" name="autoPlayAudio">
+        <label for="autoPlayAudio">auto</label>
+    </div>
+    
     <script>
         let originalText = '';
         const inputOriginalText = document.getElementById('inputOriginalText');
@@ -279,6 +360,8 @@
     
         let startTime, timerInterval, backspaceCount = 0;
         let timerStarted = false;
+
+        hideAudioPlayer();
     
         const suggestedTexts = [
             "A vida é como andar de bicicleta. Para manter o equilíbrio, é preciso continuar se movendo.",
@@ -322,11 +405,17 @@
             const randomIndex = Math.floor(Math.random() * suggestedTexts.length);
             inputOriginalText.value = suggestedTexts[randomIndex];
             inputOriginalText.dispatchEvent(new Event('input'));
+            hideAudioPlayer();
         }
 
         const scientificTexts = [
             "Nos últimos anos, a Inteligência Artificial (IA) emergiu como uma tecnologia central na transformação digital das indústrias. A Indústria 4.0, caracterizada pela automação inteligente, depende fortemente da IA para otimizar processos, melhorar a eficiência e reduzir erros. A aplicação de IA na indústria tem sido amplamente estudada em diferentes contextos. De acordo com Zhang et al. (2021), o aprendizado de máquina (ML) tem sido crucial na previsão de falhas e na manutenção preditiva, permitindo às empresas reduzir o tempo de inatividade das máquinas. Outros estudos, como o de Li et al. (2022), discutem o papel dos algoritmos de IA na otimização de processos logísticos e na redução de custos operacionais. A introdução de técnicas de aprendizado de máquina tem permitido o desenvolvimento de sistemas autônomos que não apenas executam tarefas de forma eficiente, mas também aprendem com os dados para melhorar continuamente seu desempenho."
         ];
+
+        inputOriginalText.addEventListener('input', function() {
+            
+            updateFullTextView();
+        });
 
         const scientificButton = document.getElementById('scientificButton');
 
@@ -336,21 +425,30 @@
             const randomIndex = Math.floor(Math.random() * scientificTexts.length);
             inputOriginalText.value = scientificTexts[randomIndex];
             inputOriginalText.dispatchEvent(new Event('input'));
+            showAudioPlayer();
         }
 
         function toggleFullTextView() {
-        const fullTextView = document.querySelector('.full-text-view');
-        if (viewFullTextCheckbox.checked) {
-            if (!fullTextView) {
-                const fullTextElement = document.createElement('div');
-                fullTextElement.className = 'full-text-view';
-                fullTextElement.textContent = inputOriginalText.value;
-                document.body.appendChild(fullTextElement);
+            let fullTextView = document.querySelector('.full-text-view');
+            if (viewFullTextCheckbox.checked) {
+                if (!fullTextView) {
+                    fullTextView = document.createElement('div');
+                    fullTextView.className = 'full-text-view';
+                    document.body.appendChild(fullTextView);
+                }
+                updateFullTextView();
+            } else {
+                fullTextView?.remove();
             }
-        } else {
-            fullTextView?.remove();
         }
-    }
+
+        function updateFullTextView() {
+            const fullTextView = document.querySelector('.full-text-view');
+            if (fullTextView) {
+                fullTextView.textContent = inputOriginalText.value;
+            }
+        }
+
         function clearText() {
             inputOriginalText.value = '';
             inputText.value = '';
@@ -359,6 +457,8 @@
             backspaceCount = 0;
             scoreElement.innerText = '0';
             copiedMessage.style.display = 'none';
+            updateFullTextView();
+            hideAudioPlayer();
         }
     
         function startTest() {
@@ -369,7 +469,6 @@
             }
 
             startTime = new Date().getTime();
-            console.log("Tempo de início:", startTime); // Adicione este log
             inputText.value = '';
             inputText.disabled = false;
             inputText.focus();
@@ -381,20 +480,26 @@
             speedElement.innerText = '0';
             backspaceCount = 0;
 
-            updateHighlightedText(); // Atualiza a visualização inicial do texto
+            updateHighlightedText();
             highlightedText.style.display = 'block';
         }
-
     
         function startTimerOnInput() {
             if (!timerStarted) {
                 timerStarted = true;
-                console.log("Iniciando o temporizador..."); // Adicione este log
+                console.log("Iniciando o temporizador...");
                 timerInterval = setInterval(() => {
                     const currentTime = new Date().getTime();
                     const timeElapsed = (currentTime - startTime) / 1000;
                     timeElement.innerText = timeElapsed.toFixed(2);
                 }, 100);
+
+                // Verificar se o texto científico está em uso e se a opção de auto reprodução está ativada
+                if (isScientificText(inputOriginalText.value) && document.getElementById('autoPlayAudio').checked) {
+                    audio.currentTime = 0;
+                    audio.play();
+                    showAudioPlayer();
+                }
             }
         }
     
@@ -406,7 +511,11 @@
             resetButton.disabled = false;
             calculateSpeed();
             calculateScore();
-            showReview(); // Exibe a revisão do texto após o teste
+            showReview();
+
+            // Parar o áudio se estiver tocando
+            audio.pause();
+            audio.currentTime = 0;
         }
 
         function showReview() {
@@ -459,6 +568,10 @@
             if (fullTextView) {
                 fullTextView.remove(); // Remove a visualização do texto completo se estiver presente
             }
+
+            audio.pause();
+            audio.currentTime = 0;
+            hideAudioPlayer();
         }
 
         function updateHighlightedText() {
@@ -639,6 +752,70 @@
                 copiedMessage.style.display = 'none';
             }
         }
+
+        const audio = document.getElementById('audio');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const progressBar = document.getElementById('progressBar');
+        const currentTimeElement = document.getElementById('currentTime');
+        const durationElement = document.getElementById('duration');
+        const speedControl = document.getElementById('speedControl');
+
+        playPauseBtn.addEventListener('click', togglePlayPause);
+        audio.addEventListener('timeupdate', updateProgress);
+        progressBar.addEventListener('input', seekAudio);
+        speedControl.addEventListener('change', changePlaybackSpeed);
+
+        function togglePlayPause() {
+            if (audio.paused) {
+                audio.play();
+                playPauseBtn.textContent = 'Pause';
+            } else {
+                audio.pause();
+                playPauseBtn.textContent = 'Play';
+            }
+        }
+
+        function updateProgress() {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            progressBar.value = progress;
+            currentTimeElement.textContent = formatTime(audio.currentTime);
+            durationElement.textContent = formatTime(audio.duration);
+        }
+
+        function seekAudio() {
+            const seekTime = (progressBar.value / 100) * audio.duration;
+            audio.currentTime = seekTime;
+        }
+
+        function changePlaybackSpeed() {
+            audio.playbackRate = parseFloat(speedControl.value);
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secondsLeft = Math.floor(seconds % 60);
+            return `${minutes}:${secondsLeft < 10 ? '0' : ''}${secondsLeft}`;
+        }
+
+        function showAudioPlayer() {
+            const audioPlayer = document.querySelector('.audio-player');
+            if (audioPlayer) {
+                audioPlayer.style.display = 'flex';
+            }
+        }
+
+        function hideAudioPlayer() {
+            const audioPlayer = document.querySelector('.audio-player');
+            if (audioPlayer) {
+                audioPlayer.style.display = 'none';
+            }
+        }
+        
+        function isScientificText(text) {
+            // Verificar se o texto contém o texto científico
+            return scientificTexts.includes(text.trim());
+        }
+
     </script>
     
 </body>
