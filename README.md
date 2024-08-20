@@ -39,7 +39,7 @@ Os usuários podem inserir seus próprios textos para praticar, permitindo uma e
 ## <a name="criador">&#128400;</a> *Preview:*
 
 
-| [<img src="https://github.com/bruno-pisciotta281/textTool/blob/main/textTool.jpeg" width="1500px;"/>](https://github.com/guilhermerodz) |
+| [<img src="https://github.com/bruno-pisciotta281/textTool/blob/main/textTool.jpeg" width="1500px;"/>] |
 | :------------------------------------------------------------------------------------------------------------------------: |
 
 <h3 align="center">
