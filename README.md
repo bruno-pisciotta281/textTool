@@ -42,7 +42,7 @@ Os usuários podem inserir seus próprios textos para praticar, permitindo uma e
 | [<img src="https://github.com/bruno-pisciotta281/textTool/blob/main/textTool.jpeg" width="1500px;"/>](https://github.com/guilhermerodz) |
 | :------------------------------------------------------------------------------------------------------------------------: |
 
-<p align="center">
+<h3 align="center">
 
 [TextTool](text-tool-three.vercel.app)
 
