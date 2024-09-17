@@ -1,824 +1,864 @@
-    <!DOCTYPE html>
-    <html lang="pt-BR">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
-        <title>Teste de Digitação</title>
-        <link rel="stylesheet" href="styles.css">
-    </head>
+    <title>Teste de Digitação</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
 
-    <style>
-        body {
+<style>
+    body {
 
-            font-family: "Montserrat", sans-serif;
-            font-optical-sizing: auto;
-            font-style: normal;
+        font-family: "Montserrat", sans-serif;
+        font-optical-sizing: auto;
+        font-style: normal;
 
-            background-color: #f4f4f4;
-            margin-top: 3%;
-            margin-bottom: 1%;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+        background-color: #f4f4f4;
+        margin-top: 1%;
+        margin-bottom: 1%;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
 
-        .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            width: 80%;
-            max-width: 600px;
-            margin-top: 20px;
-            max-height: 800px;
-        }
+    .container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 80%;
+        max-width: 600px;
+        margin-top: 150px;
+        max-height: 900px;
+    }
 
-        h1 {
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
+    h1 {
+        margin-bottom: 20px;
+        font-size: 24px;
+    }
 
-        #inputOriginalText {
-            width: 100%;
-            height: 50px;
-            padding: 10px;
-            font-size: 16px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            resize: none;
-        }
+    #inputOriginalText {
+        width: 100%;
+        height: 50px;
+        padding: 10px;
+        font-size: 16px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        resize: none;
+    }
 
-        #highlightedText {
-            margin-bottom: 20px;
+    #highlightedText {
+        margin-bottom: 20px;
+        font-size: 18px;
+        color: #555;
+        white-space: pre-wrap;
+        text-align: left;
+        overflow-y: auto; 
+        max-height: 150px; 
+        position: relative;
+    }
+
+    textarea {
+        width: 95% !important;
+        height: 100px;
+        padding: 10px;
+        font-size: 16px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        resize: none;
+        color: black;
+        background-color: #f9f9f9;
+    }
+
+    .correct {
+        color: green;
+    }
+
+    .incorrect {
+        color: red;
+    }
+
+    .copied-message {
+        color: red;
+        margin-top: 10px;
+        font-weight: bold;
+        display: none;
+    }
+
+    .buttons {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 10px;
+
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button:disabled {
+        background-color: #ccc;
+    }
+
+    #result {
+        margin-top: 20px;
+        font-size: 18px;
+    }
+
+    #result p {
+        margin: 5px 0;
+    }
+
+    .copied-message {
+        display: none;
+        color: red;
+        font-weight: bold;
+        margin-top: 10px;
+        opacity: 1;
+        transition: opacity 1s ease-out;
+    }
+
+    .full-text-view {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        width: 300px;
+        height: 90%;
+        overflow-y: auto;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 10px;
+        z-index: 1000;
+    }
+
+    .review-container {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        width: 300px;
+        padding: 10px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        max-height: 90%;
+        overflow-y: auto;
+    }
+
+        .review-container h2 {
             font-size: 18px;
-            color: #555;
-            white-space: pre-wrap;
-            text-align: left;
-            overflow-y: auto; 
-            max-height: 150px; 
-            position: relative;
-        }
-
-        textarea {
-            width: 95% !important;
-            height: 100px;
-            padding: 10px;
-            font-size: 16px;
             margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            resize: none;
-            color: black;
-            background-color: #f9f9f9;
         }
 
-        .correct {
+        .review-container p {
+            font-size: 16px;
+            color: #333;
+            white-space: pre-wrap;
+        }
+
+        .review-container .correct {
             color: green;
         }
 
+        .review-container .incorrect {
+            color: red;
+        }
+
+        .default {
+            color: black; 
+        }
+
+        .correct {
+            color: green; 
+        }
+
         .incorrect {
-            color: red;
+            color: red; 
         }
 
-        .copied-message {
-            color: red;
-            margin-top: 10px;
-            font-weight: bold;
-            display: none;
-        }
-
-        .buttons {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 10px;
-
-        }
-
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        button:disabled {
-            background-color: #ccc;
-        }
-
-        #result {
-            margin-top: 20px;
-            font-size: 18px;
-        }
-
-        #result p {
-            margin: 5px 0;
-        }
-
-        .copied-message {
-            display: none;
-            color: red;
-            font-weight: bold;
-            margin-top: 10px;
-            opacity: 1;
-            transition: opacity 1s ease-out;
-        }
-
-        .full-text-view {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            width: 300px;
-            height: 90%;
+        .highlighted-text-container {
+            height: 75px; 
             overflow-y: auto;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 4px;
             padding: 10px;
-            z-index: 1000;
-        }
-
-        .review-container {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            width: 300px;
-            padding: 10px;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            max-height: 90%;
-            overflow-y: auto;
-        }
-
-            .review-container h2 {
-                font-size: 18px;
-                margin-bottom: 10px;
-            }
-
-            .review-container p {
-                font-size: 16px;
-                color: #333;
-                white-space: pre-wrap;
-            }
-
-            .review-container .correct {
-                color: green;
-            }
-
-            .review-container .incorrect {
-                color: red;
-            }
-
-            .default {
-                color: black; 
-            }
-
-            .correct {
-                color: green; 
-            }
-
-            .incorrect {
-                color: red; 
-            }
-
-            .highlighted-text-container {
-                height: 75px; 
-                overflow-y: auto;
-                padding: 10px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                overflow: hidden;
-            }
-
-            .current {
-                background-color: #f0f0f0;
-                padding: 2px 0;
-            }
-
-            .remaining {
-                color: #999;
-            }
-
-            .audio-player {
-                width: 400px;
-                position: fixed;
-                bottom: 10px;
-                right: 10px;
-                background-color: #f3f3f3;
-                padding: 10px;
-                border-radius: 10px;
-                display: none; /* Alterado de 'flex' para 'none' */
-                align-items: center;
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            }
-
-            .progress-container {
-                flex-grow: 1;
-                margin: 0 10px;
-            }
-
-            #progressBar {
-                width: 100%;
-            }
-
-            #currentTime, #duration {
-                font-size: 12px;
-                color: #333;
-            }
-
-            .speed-label {
-            font-size: 14px;
-            color: #333;
-            margin-right: 5px;
-        }
-
-        select#speedControl {
-            width: 55px;
-            padding: 2px;
-            border-radius: 5px;
             border: 1px solid #ccc;
-            font-size: 14px;
-            background-color: #f9f9f9;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .current {
+            background-color: #f0f0f0;
+            padding: 2px 0;
+        }
+
+        .remaining {
+            color: #999;
+        }
+
+        .audio-player {
+            width: 400px;
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background-color: #f3f3f3;
+            padding: 10px;
+            border-radius: 10px;
+            display: none; /* Alterado de 'flex' para 'none' */
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-container {
+            flex-grow: 1;
+            margin: 0 10px;
+        }
+
+        #progressBar {
+            width: 100%;
+        }
+
+        #currentTime, #duration {
+            font-size: 12px;
             color: #333;
-            cursor: pointer;
-            transition: border-color 0.3s, box-shadow 0.3s;
-            margin-right: 10px;
         }
 
-        select#speedControl:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-        }
+        .speed-label {
+        font-size: 14px;
+        color: #333;
+        margin-right: 5px;
+    }
 
-        select#speedControl option {
-            background-color: #fff;
-            color: #333;
-            padding: 8px;
-            cursor: pointer;
-        }
+    select#speedControl {
+        width: 55px;
+        padding: 2px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+        background-color: #f9f9f9;
+        color: #333;
+        cursor: pointer;
+        transition: border-color 0.3s, box-shadow 0.3s;
+        margin-right: 10px;
+    }
 
-        select#speedControl option:hover {
-            background-color: #007bff;
-            color: #fff;
-        }
+    select#speedControl:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
 
-    </style>
+    select#speedControl option {
+        background-color: #fff;
+        color: #333;
+        padding: 8px;
+        cursor: pointer;
+    }
 
-    <body>
-        <div class="container">
-            <h1>Teste de Digitação</h1>
-            <textarea id="inputOriginalText" placeholder="Insira o texto para o teste aqui..."></textarea>
-            <label for="viewFullText">
-                <input type="checkbox" id="viewFullText">
-                Visualizar texto completo
-            </label>
-            <div class="buttons">
-                <button id="suggestButton">Treino</button>
-                <button id="scientificButton">Texto Científico</button> 
-                <button id="clearButton">Limpar</button>
-            </div>
-            <br>
-            <hr>
-            <div class="highlighted-text-container">
-                <div id="highlightedText"></div>
-            </div>
-            <hr>
-            <textarea id="inputText" placeholder="Digite o texto aqui..." disabled></textarea>
-            <div id="copiedMessage" class="copied-message">Texto copiado</div>
-            <div class="buttons">
-                <button id="startButton">Iniciar Teste</button>
-                <button id="stopButton" disabled>Parar Teste</button>
-                <button id="resetButton">Reiniciar Teste</button>
-            </div>
-            <hr>
-            <div id="result">
-                <h1>Resultados</h1>
-                <p>Correções: <span id="errors">0</span></p>
-                <p>Palavras erradas: <span id="countE">0</span></p>
-                <p>Tempo: <span id="time">0.00</span> segundos</p>
-                <p>Velocidade: <span id="speed">0</span> WPM</p>
-                <strong><p>Pontuação: <span id="score">0</span></p></strong>
-            </div>
+    select#speedControl option:hover {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    /* Estilo padrão do botão */
+    #stopButton {
+        background-color: gray;
+        color: white;
+        cursor: not-allowed;
+    }
+
+    /* Estilo do botão quando o teste é iniciado */
+    #stopButton.active {
+        background-color: red;
+        color: white;
+        cursor: pointer;
+    }
+
+
+</style>
+
+<body>
+    <div class="container">
+        <h1>Teste de Digitação</h1>
+        <label for="userName">Nome:</label>
+        <input type="text" id="userName" placeholder="Digite seu nome completo">
+        <br> 
+        <hr>
+        <div class="buttons">
+            <button id="suggestButton">Treino</button>
+            <button id="scientificButton">Texto Científico</button> 
+            <button id="clearButton">Limpar</button>
         </div>
-        <audio id="audio" src="cientifico.mp3"></audio>    
-
-        <!-- Nova área de review -->
-        <div id="reviewContainer" class="review-container" style="display: none;">
-            <h2>Revisão do Texto</h2>
-            <p id="reviewText"></p>
+        <br>
+        <textarea id="inputOriginalText" placeholder="Insira o texto para o teste aqui..."></textarea>
+        <label for="viewFullText">
+            <input type="checkbox" id="viewFullText">
+            Visualizar texto completo
+        </label>
+        <div class="highlighted-text-container">
+            <div id="highlightedText"></div>
         </div>
-
-        <div class="audio-player">
-            <button id="playPauseBtn">Play</button>
-            <div class="progress-container">
-                <input type="range" id="progressBar" value="0" max="100" step="0.1">
-            </div>
-            <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
-            <label for="speedControl" class="speed-label"></label>
-            <select id="speedControl">
-                <option value="0.5">0.5x</option>
-                <option value="0.75">0.75x</option>
-                <option value="1.0" selected>1.0x</option>
-                <option value="1.25">1.25x</option>
-                <option value="1.5">1.5x</option>
-                <option value="1.75">1.75x</option>
-                <option value="2.0">2.0x</option>
-            </select>
-            <input type="checkbox" id="autoPlayAudio" name="autoPlayAudio">
-            <label for="autoPlayAudio">auto</label>
+        <br>
+        <textarea id="inputText" placeholder="Digite o texto aqui..." disabled></textarea>
+        <div id="copiedMessage" class="copied-message">Texto copiado</div>
+        <div class="buttons">
+            <button id="startButton">Iniciar Teste</button>
+            <button id="stopButton" disabled>Parar Teste</button>
+            <button id="resetButton">Reiniciar Teste</button>
         </div>
-        
-        <script>
-            let originalText = '';
-            const inputOriginalText = document.getElementById('inputOriginalText');
-            const highlightedText = document.getElementById('highlightedText');
-            const inputText = document.getElementById('inputText');
-            const startButton = document.getElementById('startButton');
-            const stopButton = document.getElementById('stopButton');
-            const resetButton = document.getElementById('resetButton');
-            const suggestButton = document.getElementById('suggestButton');
-            const clearButton = document.getElementById('clearButton');
-            const errorsElement = document.getElementById('errors');
-            const timeElement = document.getElementById('time');
-            const speedElement = document.getElementById('speed');
-            const scoreElement = document.getElementById('score');
-            const copiedMessage = document.getElementById('copiedMessage');
-            const viewFullTextCheckbox = document.getElementById('viewFullText');
-            const countErrorsElement = document.getElementById('countE');
-        
-            let startTime, timerInterval, backspaceCount = 0;
-            let timerStarted = false;
+        <hr>
+        <div id="result">
+            <p><strong>Nome:</strong> <span id="userNameResult"></span></p> <!-- Exibição do nome -->
+            <p><strong>Data:</strong> <span id="testDate"></span></p> <!-- Exibição da data -->
+            <hr>
+            <h1>Resultados</h1>
+            <p>Correções: <span id="errors">0</span></p>
+            <p>Palavras erradas: <span id="countE">0</span></p>
+            <p>Tempo: <span id="time">0.00</span> segundos</p>
+            <p>Velocidade: <span id="speed">0</span> WPM</p>
+            <strong><p>Pontuação: <span id="score">0</span></p></strong>
+        </div>
+    </div>
+    <audio id="audio" src="cientifico.mp3"></audio>    
 
+    <!-- Nova área de review -->
+    <div id="reviewContainer" class="review-container" style="display: none;">
+        <h2>Revisão do Texto</h2>
+        <p id="reviewText"></p>
+    </div>
+
+    <div class="audio-player">
+        <button id="playPauseBtn">Play</button>
+        <div class="progress-container">
+            <input type="range" id="progressBar" value="0" max="100" step="0.1">
+        </div>
+        <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+        <label for="speedControl" class="speed-label"></label>
+        <select id="speedControl">
+            <option value="0.5">0.5x</option>
+            <option value="0.75">0.75x</option>
+            <option value="1.0" selected>1.0x</option>
+            <option value="1.25">1.25x</option>
+            <option value="1.5">1.5x</option>
+            <option value="1.75">1.75x</option>
+            <option value="2.0">2.0x</option>
+        </select>
+        <input type="checkbox" id="autoPlayAudio" name="autoPlayAudio">
+        <label for="autoPlayAudio">auto</label>
+    </div>
+    
+    <script>
+        let originalText = '';
+        const inputOriginalText = document.getElementById('inputOriginalText');
+        const highlightedText = document.getElementById('highlightedText');
+        const inputText = document.getElementById('inputText');
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const resetButton = document.getElementById('resetButton');
+        const suggestButton = document.getElementById('suggestButton');
+        const clearButton = document.getElementById('clearButton');
+        const errorsElement = document.getElementById('errors');
+        const timeElement = document.getElementById('time');
+        const speedElement = document.getElementById('speed');
+        const scoreElement = document.getElementById('score');
+        const copiedMessage = document.getElementById('copiedMessage');
+        const viewFullTextCheckbox = document.getElementById('viewFullText');
+        const countErrorsElement = document.getElementById('countE');
+    
+        let startTime, timerInterval, backspaceCount = 0;
+        let timerStarted = false;
+
+        hideAudioPlayer();
+    
+        const suggestedTexts = [
+            "O sucesso é a soma de pequenos esforços repetidos dia após dia.",
+            "A persistência é o caminho do êxito.",
+            "Nada é tão contagioso quanto o entusiasmo.",
+            "O único lugar onde o sucesso vem antes do trabalho é no dicionário.",
+            "A paciência é a arte de esperar sem perder a esperança.",
+            "O verdadeiro líder inspira outros a encontrar sua própria grandeza.",
+            "A gratidão transforma o que temos em suficiente.",
+            "A sabedoria não está em ter todas as respostas, mas em fazer as perguntas certas.",
+            "A coragem não é a ausência do medo, mas a decisão de que algo é mais importante que o medo.",
+            "O otimismo é o íman da felicidade.",
+            "A humildade é a base do crescimento pessoal.",
+            "A compaixão é a linguagem universal do coração.",
+            "A autenticidade é o melhor perfume que se pode usar.",
+            "A flexibilidade mental é o segredo para se adaptar a um mundo em constante mudança.",
+            "O autoconhecimento é o primeiro passo para a realização pessoal.",
+            "A disciplina é a ponte entre metas e realizações.",
+            "A empatia é o alicerce de relacionamentos significativos.",
+            "A resiliência transforma obstáculos em oportunidades.",
+            "O conhecimento é a chave que abre todas as portas da oportunidade.",
+            "A gentileza é uma linguagem que todos podem entender.",
+            "Cada desafio é uma chance de crescer e se fortalecer.",
+            "A criatividade floresce quando regada com curiosidade.",
+            "O respeito mútuo é a base de relacionamentos duradouros."
+        ];
+    
+        suggestButton.addEventListener('click', suggestText);
+        clearButton.addEventListener('click', clearText);
+        startButton.addEventListener('click', startTest);
+        stopButton.addEventListener('click', stopTest);
+        resetButton.addEventListener('click', resetTest);
+        inputText.addEventListener('keydown', countBackspace);
+        inputText.addEventListener('input', startTimerOnInput);
+        inputText.addEventListener('input', updateHighlightedText);
+        inputText.addEventListener('paste', detectPaste);
+        viewFullTextCheckbox.addEventListener('change', toggleFullTextView);
+    
+        function suggestText() {
+            const randomIndex = Math.floor(Math.random() * suggestedTexts.length);
+            inputOriginalText.value = suggestedTexts[randomIndex];
+            inputOriginalText.dispatchEvent(new Event('input'));
             hideAudioPlayer();
-        
-            const suggestedTexts = [
-                "A vida é como andar de bicicleta. Para manter o equilíbrio, é preciso continuar se movendo.",
-                "O sucesso é a soma de pequenos esforços repetidos dia após dia.",
-                "A persistência é o caminho do êxito.",
-                "Nada é tão contagioso quanto o entusiasmo.",
-                "O único lugar onde o sucesso vem antes do trabalho é no dicionário.",
-                "A paciência é a arte de esperar sem perder a esperança.",
-                "O verdadeiro líder inspira outros a encontrar sua própria grandeza.",
-                "A gratidão transforma o que temos em suficiente.",
-                "A sabedoria não está em ter todas as respostas, mas em fazer as perguntas certas.",
-                "A coragem não é a ausência do medo, mas a decisão de que algo é mais importante que o medo.",
-                "O otimismo é o íman da felicidade.",
-                "A humildade é a base do crescimento pessoal.",
-                "A compaixão é a linguagem universal do coração.",
-                "A autenticidade é o melhor perfume que se pode usar.",
-                "A flexibilidade mental é o segredo para se adaptar a um mundo em constante mudança.",
-                "O autoconhecimento é o primeiro passo para a realização pessoal.",
-                "A disciplina é a ponte entre metas e realizações.",
-                "A empatia é o alicerce de relacionamentos significativos.",
-                "A resiliência transforma obstáculos em oportunidades.",
-                "O conhecimento é a chave que abre todas as portas da oportunidade.",
-                "A gentileza é uma linguagem que todos podem entender.",
-                "Cada desafio é uma chance de crescer e se fortalecer.",
-                "A criatividade floresce quando regada com curiosidade.",
-                "O respeito mútuo é a base de relacionamentos duradouros."
-            ];
-        
-            suggestButton.addEventListener('click', suggestText);
-            clearButton.addEventListener('click', clearText);
-            startButton.addEventListener('click', startTest);
-            stopButton.addEventListener('click', stopTest);
-            resetButton.addEventListener('click', resetTest);
-            inputText.addEventListener('keydown', countBackspace);
-            inputText.addEventListener('input', startTimerOnInput);
-            inputText.addEventListener('input', updateHighlightedText);
-            inputText.addEventListener('paste', detectPaste);
-            viewFullTextCheckbox.addEventListener('change', toggleFullTextView);
-        
-            function suggestText() {
-                const randomIndex = Math.floor(Math.random() * suggestedTexts.length);
-                inputOriginalText.value = suggestedTexts[randomIndex];
-                inputOriginalText.dispatchEvent(new Event('input'));
-                hideAudioPlayer();
+        }
+
+        const scientificTexts = [
+            "Nos últimos anos, a Inteligência Artificial (IA) emergiu como uma tecnologia central na transformação digital das indústrias. A Indústria 4.0, caracterizada pela automação inteligente, depende fortemente da IA para otimizar processos, melhorar a eficiência e reduzir erros. A aplicação de IA na indústria tem sido amplamente estudada em diferentes contextos. De acordo com Zhang et al. (2021), o aprendizado de máquina (ML) tem sido crucial na previsão de falhas e na manutenção preditiva, permitindo às empresas reduzir o tempo de inatividade das máquinas. Outros estudos, como o de Li et al. (2022), discutem o papel dos algoritmos de IA na otimização de processos logísticos e na redução de custos operacionais. A introdução de técnicas de aprendizado de máquina tem permitido o desenvolvimento de sistemas autônomos que não apenas executam tarefas de forma eficiente, mas também aprendem com os dados para melhorar continuamente seu desempenho."
+        ];
+
+        inputOriginalText.addEventListener('input', function() {
+            
+            updateFullTextView();
+        });
+
+        const scientificButton = document.getElementById('scientificButton');
+
+        scientificButton.addEventListener('click', suggestScientificText);
+
+        function suggestScientificText() {
+            const randomIndex = Math.floor(Math.random() * scientificTexts.length);
+            inputOriginalText.value = scientificTexts[randomIndex];
+            inputOriginalText.dispatchEvent(new Event('input'));
+            showAudioPlayer();
+        }
+
+        function toggleFullTextView() {
+            let fullTextView = document.querySelector('.full-text-view');
+            if (viewFullTextCheckbox.checked) {
+                if (!fullTextView) {
+                    fullTextView = document.createElement('div');
+                    fullTextView.className = 'full-text-view';
+                    document.body.appendChild(fullTextView);
+                }
+                updateFullTextView();
+            } else {
+                fullTextView?.remove();
+            }
+        }
+
+        function updateFullTextView() {
+            const fullTextView = document.querySelector('.full-text-view');
+            if (fullTextView) {
+                fullTextView.textContent = inputOriginalText.value;
+            }
+        }
+
+        function clearText() {
+            inputOriginalText.value = '';
+            inputText.value = '';
+            highlightedText.innerHTML = '';
+            errorsElement.innerText = '0';
+            backspaceCount = 0;
+            scoreElement.innerText = '0';
+            copiedMessage.style.display = 'none';
+            updateFullTextView();
+            hideAudioPlayer();
+        }
+    
+        function startTest() {
+            originalText = inputOriginalText.value.trim();
+            if (!originalText) {
+                alert('Por favor, insira o texto para o teste.');
+                return;
             }
 
-            const scientificTexts = [
-                "Nos últimos anos, a Inteligência Artificial (IA) emergiu como uma tecnologia central na transformação digital das indústrias. A Indústria 4.0, caracterizada pela automação inteligente, depende fortemente da IA para otimizar processos, melhorar a eficiência e reduzir erros. A aplicação de IA na indústria tem sido amplamente estudada em diferentes contextos. De acordo com Zhang et al. (2021), o aprendizado de máquina (ML) tem sido crucial na previsão de falhas e na manutenção preditiva, permitindo às empresas reduzir o tempo de inatividade das máquinas. Outros estudos, como o de Li et al. (2022), discutem o papel dos algoritmos de IA na otimização de processos logísticos e na redução de custos operacionais. A introdução de técnicas de aprendizado de máquina tem permitido o desenvolvimento de sistemas autônomos que não apenas executam tarefas de forma eficiente, mas também aprendem com os dados para melhorar continuamente seu desempenho."
-            ];
+            startTime = new Date().getTime();
+            inputText.value = '';
+            inputText.disabled = false;
+            inputText.focus();
+            startButton.disabled = true;
+            stopButton.disabled = false;
+            resetButton.disabled = true;
+            errorsElement.innerText = '0';
+            timeElement.innerText = '0.00';
+            speedElement.innerText = '0';
+            backspaceCount = 0;
 
-            inputOriginalText.addEventListener('input', function() {
-                
-                updateFullTextView();
+            updateHighlightedText();
+            highlightedText.style.display = 'block';
+            
+            stopButton.removeAttribute('disabled');  // Habilita o botão
+            stopButton.classList.add('active');      // Torna o botão vermelho
+        }
+    
+        function startTimerOnInput() {
+            if (!timerStarted) {
+                timerStarted = true;
+                console.log("Iniciando o temporizador...");
+                timerInterval = setInterval(() => {
+                    const currentTime = new Date().getTime();
+                    const timeElapsed = (currentTime - startTime) / 1000;
+                    timeElement.innerText = timeElapsed.toFixed(2);
+                }, 100);
+
+                // Verificar se o texto científico está em uso e se a opção de auto reprodução está ativada
+                if (isScientificText(inputOriginalText.value) && document.getElementById('autoPlayAudio').checked) {
+                    audio.currentTime = 0;
+                    audio.play();
+                    showAudioPlayer();
+                }
+            }
+        }
+    
+        function stopTest() {
+            clearInterval(timerInterval);
+            inputText.disabled = true;
+            startButton.disabled = false;
+            stopButton.disabled = true;
+            resetButton.disabled = false;
+            calculateSpeed();
+            calculateScore();
+            showReview();
+            
+            // Capturar o nome e exibir nos resultados
+            const userName = document.getElementById('userName').value || 'Anônimo'; // Caso o nome esteja vazio
+            document.getElementById('userNameResult').innerText = userName;
+
+            // Capturar a data atual e exibir nos resultados
+            const currentDate = new Date();
+            const formattedDate = currentDate.toLocaleDateString('pt-BR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
             });
+            document.getElementById('testDate').innerText = formattedDate;
 
-            const scientificButton = document.getElementById('scientificButton');
+            // Parar o áudio se estiver tocansssdo
+            audio.pause();
+            audio.currentTime = 0;
 
-            scientificButton.addEventListener('click', suggestScientificText);
+            stopButton.setAttribute('disabled', true); // Desabilita o botão
+            stopButton.classList.remove('active');     // Remove a cor vermelha
+        }
 
-            function suggestScientificText() {
-                const randomIndex = Math.floor(Math.random() * scientificTexts.length);
-                inputOriginalText.value = scientificTexts[randomIndex];
-                inputOriginalText.dispatchEvent(new Event('input'));
-                showAudioPlayer();
-            }
 
-            function toggleFullTextView() {
-                let fullTextView = document.querySelector('.full-text-view');
-                if (viewFullTextCheckbox.checked) {
-                    if (!fullTextView) {
-                        fullTextView = document.createElement('div');
-                        fullTextView.className = 'full-text-view';
-                        document.body.appendChild(fullTextView);
-                    }
-                    updateFullTextView();
+        function showReview() {
+            const reviewContainer = document.getElementById('reviewContainer'); // Usa o container existente
+            
+            const typedWords = inputText.value.trim().split(/\s+/);
+            const originalWords = originalText.trim().split(/\s+/);
+            
+            let reviewContent = '';
+            
+            for (let i = 0; i < originalWords.length; i++) {
+                const originalWord = originalWords[i];
+                const typedWord = typedWords[i] || '';
+
+                if (typedWord === originalWord) {
+                    reviewContent += `<span class="correct">${typedWord}</span> `;
                 } else {
-                    fullTextView?.remove();
+                    reviewContent += `<span class="incorrect">${typedWord}</span> `;
                 }
             }
 
-            function updateFullTextView() {
-                const fullTextView = document.querySelector('.full-text-view');
-                if (fullTextView) {
-                    fullTextView.textContent = inputOriginalText.value;
+            reviewContainer.innerHTML = `<h2>Revisão do Texto Digitado:</h2><p>${reviewContent}</p>`;
+            reviewContainer.style.display = 'block'; // Exibe o container de revisão
+        }
+    
+        function resetTest() {
+            clearText();
+            clearInterval(timerInterval); // Limpa o intervalo do temporizador
+            startButton.disabled = false;
+            stopButton.disabled = true;
+            resetButton.disabled = true;
+            inputOriginalText.focus();
+            timerStarted = false;
+            startTime = null; // Zera o tempo inicial
+            timeElement.innerText = '0.00'; // Reseta o tempo exibido para 0.00 segundos
+            speedElement.innerText = '0'; // Reseta a velocidade exibida para 0 WPM
+            scoreElement.innerText = '0'; // Reseta a pontuação exibida para 0
+            backspaceCount = 0; // Zera a contagem de erros
+            errorsElement.innerText = '0'; // Reseta a exibição de erros para 0
+
+            // Resetar o review do texto
+            const reviewContainer = document.getElementById('reviewContainer'); // Usa o container existente
+            if (reviewContainer) {
+                reviewContainer.style.display = 'none'; // Oculta a revisão do texto
+                reviewContainer.innerHTML = ''; // Limpa o conteúdo da revisão
+            }
+
+            // Resetar a exibição do texto completo
+            const fullTextView = document.querySelector('.full-text-view');
+            if (fullTextView) {
+                fullTextView.remove(); // Remove a visualização do texto completo se estiver presente
+            }
+
+            audio.pause();
+            audio.currentTime = 0;
+            hideAudioPlayer();
+        }
+
+        function updateHighlightedText() {
+            const typedText = inputText.value;
+            const originalWords = originalText.split(/\s+/);
+            const typedWords = typedText.split(/\s+/);
+
+            const currentWordIndex = typedWords.length - 1;
+            const windowSize = 20;
+            const halfWindow = Math.floor(windowSize / 2);
+
+            let startIndex = Math.max(0, currentWordIndex - Math.floor(windowSize / 2));
+            let endIndex = Math.min(originalWords.length, startIndex + windowSize);
+
+            let highlighted = '';
+
+            for (let i = startIndex; i < endIndex; i++) {
+                const originalWord = originalWords[i];
+                const typedWord = typedWords[i] || '';
+
+                if (i < typedWords.length - 1) {
+                    if (originalWord === typedWord) {
+                        highlighted += `<span class="correct">${originalWord}</span> `;
+                    } else {
+                        highlighted += `<span class="incorrect">${originalWord}</span> `;
+                    }
+                } else if (i === typedWords.length - 1) {
+                    const matchedPart = originalWord.slice(0, typedWord.length);
+                    const remainingPart = originalWord.slice(typedWord.length);
+
+                    highlighted += `<span class="current">`;
+                    highlighted += `<span class="${typedWord === matchedPart ? 'correct' : 'incorrect'}">${matchedPart}</span>`;
+                    highlighted += `<span class="remaining next-word">${remainingPart}</span>`;
+                    highlighted += `</span> `;
+                } else {
+                    highlighted += `<span class="default">${originalWord}</span> `;
                 }
             }
 
-            function clearText() {
-                inputOriginalText.value = '';
+            // Adicionar indicadores de continuação se necessário
+            if (startIndex > 0) {
+                highlighted = '... ' + highlighted;
+            }
+            if (endIndex < originalWords.length) {
+                highlighted += ' ...';
+            }
+
+            // Atualizar o conteúdo apenas se houver mudanças significativas
+            if (highlightedText.innerHTML !== highlighted) {
+                highlightedText.innerHTML = highlighted.trim();
+            }
+
+            // Ajustar a rolagem suavemente
+            adjustScroll();
+
+            updateErrorCount();
+
+            checkText(); // Verificar se o texto digitado está completo
+        }
+
+        function adjustScroll() {
+            const container = highlightedText.parentElement;
+            const currentWordElement = highlightedText.querySelector('.current');
+            
+            if (currentWordElement) {
+                const containerRect = container.getBoundingClientRect();
+                const currentWordRect = currentWordElement.getBoundingClientRect();
+
+                // Calcular a posição desejada
+                const desiredPosition = currentWordRect.top - containerRect.top - containerRect.height / 2 + currentWordRect.height / 2;
+
+                // Aplicar rolagem suave
+                container.scrollTo({
+                    top: container.scrollTop + desiredPosition,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        function checkText() {
+        const input = inputText.value;
+        if (input === originalText) {
+            stopTest(); // Encerrar o teste se o texto digitado corresponder ao texto original
+        }
+    }
+    
+        function countBackspace(event) {
+            if (event.key === 'Backspace') {
+                backspaceCount++;
+                errorsElement.innerText = backspaceCount;
+            }
+        }
+    
+        function calculateSpeed() {
+            const timeElapsed = (new Date().getTime() - startTime) / 60000; // in minutes
+            const wordCount = inputText.value.trim().split(/\s+/).length;
+            const wpm = Math.floor(wordCount / timeElapsed);
+            speedElement.innerText = wpm;
+        }
+    
+        function calculateScore() {
+            const totalWords = originalText.trim().split(/\s+/).length;
+            const typedWords = inputText.value.trim().split(/\s+/).length;
+            const timeElapsed = (new Date().getTime() - startTime) / 1000; // em segundos
+            const maxTime = 300; // Tempo máximo em segundos (5 minutos)
+
+            const errors = countErrors();
+            const backspaces = backspaceCount; // Assumindo que você está rastreando backspaces
+
+            // Cálculo de precisão
+            const accuracy = Math.max(0, 1 - (errors / totalWords));
+
+            // Fator de palavras (considerando tanto a quantidade quanto a precisão)
+            const wordFactor = Math.min(1, (typedWords / totalWords) * accuracy);
+
+            // Fator de tempo (recompensa velocidade, mas com um limite)
+            const timeFactor = Math.max(0, 1 - (timeElapsed / maxTime));
+
+            // Fator de eficiência (penaliza o uso excessivo de backspace)
+            const efficiencyFactor = Math.max(0, 1 - (backspaces / (2 * totalWords)));
+
+            // Cálculo da pontuação (0-100)
+            const score = Math.round(100 * (
+                0.4 * wordFactor +   // 40% baseado nas palavras digitadas e precisão
+                0.3 * accuracy +     // 30% baseado apenas na precisão
+                0.2 * timeFactor +   // 20% baseado no tempo
+                0.1 * efficiencyFactor  // 10% baseado na eficiência (uso de backspace)
+            ));
+
+            // Exibição dos resultados
+            scoreElement.innerText = score;
+            
+            // Opcional: Exibir detalhes adicionais
+            console.log(`Palavras totais: ${totalWords}`);
+            console.log(`Palavras digitadas: ${typedWords}`);
+            console.log(`Erros: ${errors}`);
+            console.log(`Backspaces: ${backspaces}`);
+            console.log(`Precisão: ${(accuracy * 100).toFixed(2)}%`);
+            console.log(`Tempo: ${timeElapsed.toFixed(2)} segundos`);
+            console.log(`Pontuação: ${score}`);
+        }
+
+        function countErrors() {
+            const typedWords = inputText.value.trim().split(/\s+/);
+            const originalWords = originalText.trim().split(/\s+/);
+            let errorCount = 0;
+
+            for (let i = 0; i < typedWords.length; i++) {
+                if (typedWords[i] !== originalWords[i]) {
+                    errorCount++;
+                }
+            }
+
+            return errorCount;
+        }
+
+        function updateErrorCount() {
+            const errors = countErrors();
+            countErrorsElement.innerText = errors;
+        }
+        
+        function detectPaste(event) {
+            const pastedText = event.clipboardData.getData('text');
+            if (pastedText === originalText) {
+                copiedMessage.style.display = 'block';
+                copiedMessage.style.opacity = '1'; // Garantir que a mensagem comece opaca
+                event.preventDefault();
                 inputText.value = '';
-                highlightedText.innerHTML = '';
-                errorsElement.innerText = '0';
-                backspaceCount = 0;
-                scoreElement.innerText = '0';
+                
+                // Remover a mensagem após 3 segundos com efeito fade-out
+                setTimeout(() => {
+                    copiedMessage.style.opacity = '0'; // Inicia o fade-out
+                    setTimeout(() => {
+                        copiedMessage.style.display = 'none'; // Esconde completamente após o fade-out
+                    }, 1000); // Tempo do fade-out (1 segundo neste caso)
+                }, 3000); // Aguardar 3 segundos antes de iniciar o fade-out
+            } else {
                 copiedMessage.style.display = 'none';
-                updateFullTextView();
-                hideAudioPlayer();
             }
-        
-            function startTest() {
-                originalText = inputOriginalText.value.trim();
-                if (!originalText) {
-                    alert('Por favor, insira o texto para o teste.');
-                    return;
-                }
+        }
 
-                startTime = new Date().getTime();
-                inputText.value = '';
-                inputText.disabled = false;
-                inputText.focus();
-                startButton.disabled = true;
-                stopButton.disabled = false;
-                resetButton.disabled = true;
-                errorsElement.innerText = '0';
-                timeElement.innerText = '0.00';
-                speedElement.innerText = '0';
-                backspaceCount = 0;
+        const audio = document.getElementById('audio');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const progressBar = document.getElementById('progressBar');
+        const currentTimeElement = document.getElementById('currentTime');
+        const durationElement = document.getElementById('duration');
+        const speedControl = document.getElementById('speedControl');
 
-                updateHighlightedText();
-                highlightedText.style.display = 'block';
-            }
-        
-            function startTimerOnInput() {
-                if (!timerStarted) {
-                    timerStarted = true;
-                    console.log("Iniciando o temporizador...");
-                    timerInterval = setInterval(() => {
-                        const currentTime = new Date().getTime();
-                        const timeElapsed = (currentTime - startTime) / 1000;
-                        timeElement.innerText = timeElapsed.toFixed(2);
-                    }, 100);
+        playPauseBtn.addEventListener('click', togglePlayPause);
+        audio.addEventListener('timeupdate', updateProgress);
+        progressBar.addEventListener('input', seekAudio);
+        speedControl.addEventListener('change', changePlaybackSpeed);
 
-                    // Verificar se o texto científico está em uso e se a opção de auto reprodução está ativada
-                    if (isScientificText(inputOriginalText.value) && document.getElementById('autoPlayAudio').checked) {
-                        audio.currentTime = 0;
-                        audio.play();
-                        showAudioPlayer();
-                    }
-                }
-            }
-        
-            function stopTest() {
-                clearInterval(timerInterval);
-                inputText.disabled = true;
-                startButton.disabled = false;
-                stopButton.disabled = true;
-                resetButton.disabled = false;
-                calculateSpeed();
-                calculateScore();
-                showReview();
-
-                // Parar o áudio se estiver tocando
+        function togglePlayPause() {
+            if (audio.paused) {
+                audio.play();
+                playPauseBtn.textContent = 'Pause';
+            } else {
                 audio.pause();
-                audio.currentTime = 0;
+                playPauseBtn.textContent = 'Play';
             }
+        }
 
-            function showReview() {
-                const reviewContainer = document.getElementById('reviewContainer'); // Usa o container existente
-                
-                const typedWords = inputText.value.trim().split(/\s+/);
-                const originalWords = originalText.trim().split(/\s+/);
-                
-                let reviewContent = '';
-                
-                for (let i = 0; i < originalWords.length; i++) {
-                    const originalWord = originalWords[i];
-                    const typedWord = typedWords[i] || '';
+        function updateProgress() {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            progressBar.value = progress;
+            currentTimeElement.textContent = formatTime(audio.currentTime);
+            durationElement.textContent = formatTime(audio.duration);
+        }
 
-                    if (typedWord === originalWord) {
-                        reviewContent += `<span class="correct">${typedWord}</span> `;
-                    } else {
-                        reviewContent += `<span class="incorrect">${typedWord}</span> `;
-                    }
-                }
+        function seekAudio() {
+            const seekTime = (progressBar.value / 100) * audio.duration;
+            audio.currentTime = seekTime;
+        }
 
-                reviewContainer.innerHTML = `<h2>Revisão do Texto Digitado:</h2><p>${reviewContent}</p>`;
-                reviewContainer.style.display = 'block'; // Exibe o container de revisão
+        function changePlaybackSpeed() {
+            audio.playbackRate = parseFloat(speedControl.value);
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secondsLeft = Math.floor(seconds % 60);
+            return `${minutes}:${secondsLeft < 10 ? '0' : ''}${secondsLeft}`;
+        }
+
+        function showAudioPlayer() {
+            const audioPlayer = document.querySelector('.audio-player');
+            if (audioPlayer) {
+                audioPlayer.style.display = 'flex';
             }
-        
-            function resetTest() {
-                clearText();
-                clearInterval(timerInterval); // Limpa o intervalo do temporizador
-                startButton.disabled = false;
-                stopButton.disabled = true;
-                resetButton.disabled = true;
-                inputOriginalText.focus();
-                timerStarted = false;
-                startTime = null; // Zera o tempo inicial
-                timeElement.innerText = '0.00'; // Reseta o tempo exibido para 0.00 segundos
-                speedElement.innerText = '0'; // Reseta a velocidade exibida para 0 WPM
-                scoreElement.innerText = '0'; // Reseta a pontuação exibida para 0
-                backspaceCount = 0; // Zera a contagem de erros
-                errorsElement.innerText = '0'; // Reseta a exibição de erros para 0
+        }
 
-                // Resetar o review do texto
-                const reviewContainer = document.getElementById('reviewContainer'); // Usa o container existente
-                if (reviewContainer) {
-                    reviewContainer.style.display = 'none'; // Oculta a revisão do texto
-                    reviewContainer.innerHTML = ''; // Limpa o conteúdo da revisão
-                }
-
-                // Resetar a exibição do texto completo
-                const fullTextView = document.querySelector('.full-text-view');
-                if (fullTextView) {
-                    fullTextView.remove(); // Remove a visualização do texto completo se estiver presente
-                }
-
-                audio.pause();
-                audio.currentTime = 0;
-                hideAudioPlayer();
-            }
-
-            function updateHighlightedText() {
-                const typedText = inputText.value;
-                const originalWords = originalText.split(/\s+/);
-                const typedWords = typedText.split(/\s+/);
-
-                const currentWordIndex = typedWords.length - 1;
-                const windowSize = 20;
-                const halfWindow = Math.floor(windowSize / 2);
-
-                let startIndex = Math.max(0, currentWordIndex - Math.floor(windowSize / 2));
-                let endIndex = Math.min(originalWords.length, startIndex + windowSize);
-
-                let highlighted = '';
-
-                for (let i = startIndex; i < endIndex; i++) {
-                    const originalWord = originalWords[i];
-                    const typedWord = typedWords[i] || '';
-
-                    if (i < typedWords.length - 1) {
-                        if (originalWord === typedWord) {
-                            highlighted += `<span class="correct">${originalWord}</span> `;
-                        } else {
-                            highlighted += `<span class="incorrect">${originalWord}</span> `;
-                        }
-                    } else if (i === typedWords.length - 1) {
-                        const matchedPart = originalWord.slice(0, typedWord.length);
-                        const remainingPart = originalWord.slice(typedWord.length);
-
-                        highlighted += `<span class="current">`;
-                        highlighted += `<span class="${typedWord === matchedPart ? 'correct' : 'incorrect'}">${matchedPart}</span>`;
-                        highlighted += `<span class="remaining next-word">${remainingPart}</span>`;
-                        highlighted += `</span> `;
-                    } else {
-                        highlighted += `<span class="default">${originalWord}</span> `;
-                    }
-                }
-
-                // Adicionar indicadores de continuação se necessário
-                if (startIndex > 0) {
-                    highlighted = '... ' + highlighted;
-                }
-                if (endIndex < originalWords.length) {
-                    highlighted += ' ...';
-                }
-
-                // Atualizar o conteúdo apenas se houver mudanças significativas
-                if (highlightedText.innerHTML !== highlighted) {
-                    highlightedText.innerHTML = highlighted.trim();
-                }
-
-                // Ajustar a rolagem suavemente
-                adjustScroll();
-
-                updateErrorCount();
-
-                checkText(); // Verificar se o texto digitado está completo
-            }
-
-            function adjustScroll() {
-                const container = highlightedText.parentElement;
-                const currentWordElement = highlightedText.querySelector('.current');
-                
-                if (currentWordElement) {
-                    const containerRect = container.getBoundingClientRect();
-                    const currentWordRect = currentWordElement.getBoundingClientRect();
-
-                    // Calcular a posição desejada
-                    const desiredPosition = currentWordRect.top - containerRect.top - containerRect.height / 2 + currentWordRect.height / 2;
-
-                    // Aplicar rolagem suave
-                    container.scrollTo({
-                        top: container.scrollTop + desiredPosition,
-                        behavior: 'smooth'
-                    });
-                }
-            }
-
-            function checkText() {
-            const input = inputText.value;
-            if (input === originalText) {
-                stopTest(); // Encerrar o teste se o texto digitado corresponder ao texto original
+        function hideAudioPlayer() {
+            const audioPlayer = document.querySelector('.audio-player');
+            if (audioPlayer) {
+                audioPlayer.style.display = 'none';
             }
         }
         
-            function countBackspace(event) {
-                if (event.key === 'Backspace') {
-                    backspaceCount++;
-                    errorsElement.innerText = backspaceCount;
-                }
-            }
-        
-            function calculateSpeed() {
-                const timeElapsed = (new Date().getTime() - startTime) / 60000; // in minutes
-                const wordCount = inputText.value.trim().split(/\s+/).length;
-                const wpm = Math.floor(wordCount / timeElapsed);
-                speedElement.innerText = wpm;
-            }
-        
-            function calculateScore() {
-                const totalWords = originalText.trim().split(/\s+/).length;
-                const typedWords = inputText.value.trim().split(/\s+/).length;
-                const timeElapsed = (new Date().getTime() - startTime) / 1000; // em segundos
-                const maxTime = 300; // Tempo máximo em segundos (5 minutos)
+        function isScientificText(text) {
+            // Verificar se o texto contém o texto científico
+            return scientificTexts.includes(text.trim());
+        }
 
-                const errors = countErrors();
-                const backspaces = backspaceCount; // Assumindo que você está rastreando backspaces
-
-                // Cálculo de precisão
-                const accuracy = Math.max(0, 1 - (errors / totalWords));
-
-                // Fator de palavras (considerando tanto a quantidade quanto a precisão)
-                const wordFactor = Math.min(1, (typedWords / totalWords) * accuracy);
-
-                // Fator de tempo (recompensa velocidade, mas com um limite)
-                const timeFactor = Math.max(0, 1 - (timeElapsed / maxTime));
-
-                // Fator de eficiência (penaliza o uso excessivo de backspace)
-                const efficiencyFactor = Math.max(0, 1 - (backspaces / (2 * totalWords)));
-
-                // Cálculo da pontuação (0-100)
-                const score = Math.round(100 * (
-                    0.4 * wordFactor +   // 40% baseado nas palavras digitadas e precisão
-                    0.3 * accuracy +     // 30% baseado apenas na precisão
-                    0.2 * timeFactor +   // 20% baseado no tempo
-                    0.1 * efficiencyFactor  // 10% baseado na eficiência (uso de backspace)
-                ));
-
-                // Exibição dos resultados
-                scoreElement.innerText = score;
-                
-                // Opcional: Exibir detalhes adicionais
-                console.log(`Palavras totais: ${totalWords}`);
-                console.log(`Palavras digitadas: ${typedWords}`);
-                console.log(`Erros: ${errors}`);
-                console.log(`Backspaces: ${backspaces}`);
-                console.log(`Precisão: ${(accuracy * 100).toFixed(2)}%`);
-                console.log(`Tempo: ${timeElapsed.toFixed(2)} segundos`);
-                console.log(`Pontuação: ${score}`);
-            }
-
-            function countErrors() {
-                const typedWords = inputText.value.trim().split(/\s+/);
-                const originalWords = originalText.trim().split(/\s+/);
-                let errorCount = 0;
-
-                for (let i = 0; i < typedWords.length; i++) {
-                    if (typedWords[i] !== originalWords[i]) {
-                        errorCount++;
-                    }
-                }
-
-                return errorCount;
-            }
-
-            function updateErrorCount() {
-                const errors = countErrors();
-                countErrorsElement.innerText = errors;
-            }
-            
-            function detectPaste(event) {
-                const pastedText = event.clipboardData.getData('text');
-                if (pastedText === originalText) {
-                    copiedMessage.style.display = 'block';
-                    copiedMessage.style.opacity = '1'; // Garantir que a mensagem comece opaca
-                    event.preventDefault();
-                    inputText.value = '';
-                    
-                    // Remover a mensagem após 3 segundos com efeito fade-out
-                    setTimeout(() => {
-                        copiedMessage.style.opacity = '0'; // Inicia o fade-out
-                        setTimeout(() => {
-                            copiedMessage.style.display = 'none'; // Esconde completamente após o fade-out
-                        }, 1000); // Tempo do fade-out (1 segundo neste caso)
-                    }, 3000); // Aguardar 3 segundos antes de iniciar o fade-out
-                } else {
-                    copiedMessage.style.display = 'none';
-                }
-            }
-
-            const audio = document.getElementById('audio');
-            const playPauseBtn = document.getElementById('playPauseBtn');
-            const progressBar = document.getElementById('progressBar');
-            const currentTimeElement = document.getElementById('currentTime');
-            const durationElement = document.getElementById('duration');
-            const speedControl = document.getElementById('speedControl');
-
-            playPauseBtn.addEventListener('click', togglePlayPause);
-            audio.addEventListener('timeupdate', updateProgress);
-            progressBar.addEventListener('input', seekAudio);
-            speedControl.addEventListener('change', changePlaybackSpeed);
-
-            function togglePlayPause() {
-                if (audio.paused) {
-                    audio.play();
-                    playPauseBtn.textContent = 'Pause';
-                } else {
-                    audio.pause();
-                    playPauseBtn.textContent = 'Play';
-                }
-            }
-
-            function updateProgress() {
-                const progress = (audio.currentTime / audio.duration) * 100;
-                progressBar.value = progress;
-                currentTimeElement.textContent = formatTime(audio.currentTime);
-                durationElement.textContent = formatTime(audio.duration);
-            }
-
-            function seekAudio() {
-                const seekTime = (progressBar.value / 100) * audio.duration;
-                audio.currentTime = seekTime;
-            }
-
-            function changePlaybackSpeed() {
-                audio.playbackRate = parseFloat(speedControl.value);
-            }
-
-            function formatTime(seconds) {
-                const minutes = Math.floor(seconds / 60);
-                const secondsLeft = Math.floor(seconds % 60);
-                return `${minutes}:${secondsLeft < 10 ? '0' : ''}${secondsLeft}`;
-            }
-
-            function showAudioPlayer() {
-                const audioPlayer = document.querySelector('.audio-player');
-                if (audioPlayer) {
-                    audioPlayer.style.display = 'flex';
-                }
-            }
-
-            function hideAudioPlayer() {
-                const audioPlayer = document.querySelector('.audio-player');
-                if (audioPlayer) {
-                    audioPlayer.style.display = 'none';
-                }
-            }
-            
-            function isScientificText(text) {
-                // Verificar se o texto contém o texto científico
-                return scientificTexts.includes(text.trim());
-            }
-
-        </script>
-        
-    </body>
-    </html>
+    </script>
+    
+</body>
+</html>
